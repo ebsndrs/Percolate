@@ -13,7 +13,7 @@ namespace Percolate.Parsers
 
             if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("sort"))
             {
-                sortModel.Nodes = ParseSortParameterNodes(actionExecutedContext.HttpContext.Request.Query["page"]);
+                sortModel.Nodes = ParseSortParameterNodes(actionExecutedContext.HttpContext.Request.Query["sort"]);
             }
 
             return sortModel;

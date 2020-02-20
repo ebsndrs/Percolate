@@ -3,20 +3,10 @@
     enum FilterOperator
     {
         Equals,
-        NotEquals,
+        DoesNotEqual,
         GreaterThan,
         LessThan,
-        GreaterThanOrEqualTo,
-        LessThanOrEqualTo,
-        Contains,
-        StartsWith,
-        DoesNotContain,
-        DoesNotStartWith,
-        CaseInsensitiveEquals,
-        CaseInsensitiveNotEquals,
-        CaseInsensitiveContains,
-        CaseInsensitiveStartsWith,
-        CaseInsensitiveDoesNotContain,
-        CaseInsensitiveDoessNotStartWith
+        GreaterThanOrEqual,
+        LessThanOrEqual,
     }
 }
