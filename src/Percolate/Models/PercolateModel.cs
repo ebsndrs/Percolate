@@ -8,7 +8,7 @@ namespace Percolate.Models
 {
     class PercolateModel
     {
-        public PageModel PageModel { get; set; }
+        public PagingModel PageModel { get; set; }
 
         public SortModel SortModel { get; set; }
 
