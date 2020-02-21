@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Percolate
+﻿namespace Percolate
 {
-    class PercolateService
+    public class PercolateService : IPercolateService
     {
+        public PercolateService()
+        {
+            Options = new PercolateOptions();
+        }
+
+        public PercolateOptions Options { get; set; }
     }
 }

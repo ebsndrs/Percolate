@@ -19,6 +19,8 @@ namespace Percolate
         private static IServiceCollection BuildPercolateService(this IServiceCollection services, Action<PercolateOptions> options)
         {
             services.AddMvcCore(options => options.Filters.Add<PercolateActionFilter>());
+            services.AddScoped<IPercolateService, PercolateService>();
+            services.Configure(options);
 
             return services;
         }
