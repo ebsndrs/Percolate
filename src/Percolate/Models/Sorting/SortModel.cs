@@ -2,8 +2,13 @@
 
 namespace Percolate.Models.Sorting
 {
-    class SortModel
+    public class SortModel
     {
+        public SortModel()
+        {
+            Nodes = new List<SortNode>();
+        }
+
         public IEnumerable<SortNode> Nodes { get; set; }
     }
 }

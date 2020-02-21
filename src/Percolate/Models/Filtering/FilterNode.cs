@@ -1,6 +1,6 @@
 ﻿namespace Percolate.Models.Filtering
 {
-    class FilterNode
+    public class FilterNode
     {
         public string PropertyName { get; set; }
 

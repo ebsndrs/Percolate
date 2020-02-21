@@ -1,6 +1,6 @@
 ﻿namespace Percolate.Models.Paging
 {
-    class PagingModel
+    public class PagingModel
     {
         public PagingModel()
         {

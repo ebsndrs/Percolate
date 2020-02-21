@@ -1,6 +1,6 @@
 ﻿namespace Percolate.Models.Filtering
 {
-    enum FilterOperator
+    public enum FilterOperator
     {
         Equals,
         DoesNotEqual,

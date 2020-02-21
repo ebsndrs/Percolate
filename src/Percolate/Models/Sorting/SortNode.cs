@@ -1,6 +1,6 @@
 ﻿namespace Percolate.Models.Sorting
 {
-    class SortNode
+    public class SortNode
     {
         public string PropertyName { get; set; }
 
