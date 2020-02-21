@@ -1,25 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Percolate.Exceptions;
 using Percolate.Models.Filtering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Percolate.Parsers
 {
-    internal static class FilterParser
+    public static class FilterParser
     {
-        private static readonly Dictionary<FilterOperator, string> filterOperators = new Dictionary<FilterOperator, string>()
-        {
-            { FilterOperator.Equals, "==" },
-            { FilterOperator.DoesNotEqual, "!=" },
-            { FilterOperator.GreaterThan, ">" },
-            { FilterOperator.LessThan, "<" },
-            { FilterOperator.GreaterThanOrEqual, ">=" },
-            { FilterOperator.LessThanOrEqual, "<=" }
-        };
-
-        internal static FilterModel ParseFilterParameter(IQueryCollection queryCollection)
+        public static FilterModel ParseFilterParameter(IQueryCollection queryCollection)
         {
             var filterModel = new FilterModel();
 
@@ -32,6 +22,16 @@ namespace Percolate.Parsers
             return filterModel;
         }
 
+        private static Dictionary<FilterOperator, string> filterOperators => new Dictionary<FilterOperator, string>()
+        {
+            { FilterOperator.Equals, "==" },
+            { FilterOperator.DoesNotEqual, "!=" },
+            { FilterOperator.GreaterThan, ">" },
+            { FilterOperator.LessThan, "<" },
+            { FilterOperator.GreaterThanOrEqual, ">=" },
+            { FilterOperator.LessThanOrEqual, "<=" }
+        };
+
         private static IEnumerable<FilterNode> ParseFilterParameterNodes(string[] queryStrings)
         {
             return queryStrings.Select(queryString => ParseFilterParameterNode(queryString));
@@ -39,26 +39,94 @@ namespace Percolate.Parsers
 
         private static FilterNode ParseFilterParameterNode(string queryString)
         {
-            //loop through the possible operators to try and find a match
-            foreach (var op in filterOperators)
+            FilterOperator? filterOperator = null;
+            Range operatorRange = new Range(0, 0);
+
+            for (int i = 0; i < queryString.Length; i++)
             {
-                //insert the operator string into our regex pattern to check if it matches
-                //the regex only matches if exactly one of the filter operators is present in the string
-                //this is more certain than string.Contains() because it ensures an exact character match
-                if (Regex.IsMatch(queryString, $@"^\w+({op.Value}){{1}}[^=!><][\s\S]+$"))
+                //only evaluate chars that aren't the first or last chars of the string
+                if (i > 0 && i < queryString.Length - 1)
                 {
-                    var values = queryString.Split(op.Value);
-                    return new FilterNode
+                    //grab the current, next, and previous chars
+                    var current = queryString[i];
+                    var previous = queryString[i - 1];
+                    var next = queryString[i + 1];
+
+                    /* now, evaluate what the current char is. If it's one of our potential filter operators,
+                     * now, evaluate what the current char is. If it's one of our potential filter operators, 
+                     * break the loop because we've identified the operator that query string is using.
+                     * This allows for a queryString like abc==<=!=xyz to be valid: it will evaluate to abc (==) <=!=xyz
+                     * We did it this way because the filter value might contain characters that are possible operators.
+                     * For example, one might want to filter on a string that contains a ! character. This is the most generous
+                     * parsing possible. Further checks on the value can be performed in the validation step.
+                     * 
+                     * Once a match is found, we use a Range to determine where in the string the operator is found.
+                     * This Range is used to "split" the string later on.
+                     * The range begins at i and ends at i + n where n is the length of the operator.
+                     */
+                    if (current == '>')
                     {
-                        PropertyName = values[0],
-                        Operator = op.Key,
-                        FilterValue = values[1]
-                    };
+                        if (next != '=')
+                        {
+                            filterOperator = FilterOperator.GreaterThan;
+                            operatorRange = new Range(i, i + 1);
+                            break;
+                        }
+                        else if (next == '=')
+                        {
+                            filterOperator = FilterOperator.GreaterThanOrEqual;
+                            operatorRange = new Range(i, i + 2);
+                            break;
+                        }
+                    }
+                    else if (current == '<')
+                    {
+                        if (next != '=')
+                        {
+                            filterOperator = FilterOperator.LessThan;
+                            operatorRange = new Range(i, i + 1);
+                            break;
+                        }
+                        else if (next == '=')
+                        {
+                            filterOperator = FilterOperator.LessThanOrEqual;
+                            operatorRange = new Range(i, i + 2);
+                            break;
+                        }
+                    }
+                    else if (current == '!')
+                    {
+                        if (next == '=')
+                        {
+                            filterOperator = FilterOperator.DoesNotEqual;
+                            operatorRange = new Range(i, i + 2);
+                            break;
+                        }
+                    }
+                    else if (current == '=')
+                    {
+                        if (next == '=')
+                        {
+                            filterOperator = FilterOperator.Equals;
+                            operatorRange = new Range(i, i + 2);
+                            break;
+                        }
+                    }
                 }
             }
 
-            //if we reached the end of the loop, no match was found
-            throw new ParameterParsingException();
+            //If the above loop finished without assigning the filterOperator, we can assume it's a malformed parameter
+            if (filterOperator == null)
+            {
+                throw new ParameterParsingException();
+            }
+
+            return new FilterNode
+            {
+                PropertyName = queryString[..operatorRange.Start],
+                Operator = filterOperator.Value,
+                FilterValue = queryString[operatorRange.End..]
+            };
         }
     }
 }
