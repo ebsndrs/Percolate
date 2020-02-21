@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Primitives;
 using Percolate.Models.Sorting;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Percolate.Parsers
 {
@@ -29,19 +28,24 @@ namespace Percolate.Parsers
 
         private static SortNode ParseSortParameterNode(string rawValue)
         {
-            var sortNode = new SortNode
-            {
-                PropertyName = rawValue,
-                Direction = SortDirection.Ascending
-            };
+            var pattern = @"^[-]{1}\w+";
 
-            if (rawValue.StartsWith("-"))
+            if (Regex.IsMatch(rawValue, pattern))
             {
-                sortNode.PropertyName = rawValue.Remove(0, 1);
-                sortNode.Direction = SortDirection.Descending;
+                return new SortNode
+                {
+                    PropertyName = rawValue.Replace("-", string.Empty),
+                    Direction = SortDirection.Descending
+                };
             }
-
-            return sortNode;
+            else
+            {
+                return new SortNode
+                {
+                    PropertyName = rawValue,
+                    Direction = SortDirection.Ascending
+                };
+            }
         }
     }
 }
