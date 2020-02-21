@@ -6,9 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace Percolate.Parsers
 {
-    internal static class SortParser
+    public static class SortParser
     {
-        internal static SortModel ParseSortParameter(IQueryCollection queryCollection)
+        public static SortModel ParseSortParameter(IQueryCollection queryCollection)
         {
             var sortModel = new SortModel();
 
