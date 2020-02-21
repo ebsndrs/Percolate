@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Http;
 using Percolate.Exceptions;
 using Percolate.Models.Paging;
 using System;
@@ -8,23 +7,23 @@ namespace Percolate.Parsers
 {
     internal static class PagingParser
     {
-        internal static PagingModel ParsePagingParameters(ActionExecutedContext actionExecutedContext)
+        internal static PagingModel ParsePagingParameters(IQueryCollection queryCollection)
         {
-            var PagingModel = new PagingModel();
+            var pagingModel = new PagingModel();
 
-            if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("page"))
+            if (queryCollection.ContainsKey("page"))
             {
-                var queryStrings = actionExecutedContext.HttpContext.Request.Query["page"].ToString().Split(',');
-                PagingModel.Page = ParsePageParameter(queryStrings);
+                var queryStrings = queryCollection["page"].ToString().Split(',');
+                pagingModel.Page = ParsePageParameter(queryStrings);
             }
 
-            if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("pageSize"))
+            if (queryCollection.ContainsKey("pageSize"))
             {
-                var queryStrings = actionExecutedContext.HttpContext.Request.Query["pageSize"].ToString().Split(',');
-                PagingModel.PageSize = ParsePageSizeParameter(queryStrings);
+                var queryStrings = queryCollection["pageSize"].ToString().Split(',');
+                pagingModel.PageSize = ParsePageSizeParameter(queryStrings);
             }
 
-            return PagingModel;
+            return pagingModel;
         }
 
         private static int ParsePageParameter(string[] queryStrings)

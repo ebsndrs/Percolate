@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using Percolate.Models.Sorting;
 using System.Collections.Generic;
@@ -8,13 +9,13 @@ namespace Percolate.Parsers
 {
     internal static class SortParser
     {
-        internal static SortModel ParseSortParameter(ActionExecutedContext actionExecutedContext)
+        internal static SortModel ParseSortParameter(IQueryCollection queryCollection)
         {
             var sortModel = new SortModel();
 
-            if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("sort"))
+            if (queryCollection.ContainsKey("sort"))
             {
-                var queryStrings = actionExecutedContext.HttpContext.Request.Query["sort"].ToString().Split(',');
+                var queryStrings = queryCollection["sort"].ToString().Split(',');
                 sortModel.Nodes = ParseSortParameterNodes(queryStrings);
             }
 
