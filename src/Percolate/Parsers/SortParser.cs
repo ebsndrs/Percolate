@@ -2,33 +2,28 @@
 using Microsoft.Extensions.Primitives;
 using Percolate.Models.Sorting;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Percolate.Parsers
 {
-    static class SortParser
+    internal static class SortParser
     {
-        static SortModel ParseSortParameter(ActionExecutedContext actionExecutedContext)
+        internal static SortModel ParseSortParameter(ActionExecutedContext actionExecutedContext)
         {
             var sortModel = new SortModel();
 
             if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("sort"))
             {
-                sortModel.Nodes = ParseSortParameterNodes(actionExecutedContext.HttpContext.Request.Query["sort"]);
+                var queryStrings = actionExecutedContext.HttpContext.Request.Query["sort"].ToString().Split(',');
+                sortModel.Nodes = ParseSortParameterNodes(queryStrings);
             }
 
             return sortModel;
         }
 
-        private static IEnumerable<SortNode> ParseSortParameterNodes(StringValues rawValues)
+        private static IEnumerable<SortNode> ParseSortParameterNodes(string[] queryStrings)
         {
-            var sortNodes = new List<SortNode>();
-
-            foreach (var node in rawValues)
-            {
-                sortNodes.Add(ParseSortParameterNode(node));
-            }
-
-            return sortNodes;
+            return queryStrings.Select(queryString => ParseSortParameterNode(queryString));
         }
 
         private static SortNode ParseSortParameterNode(string rawValue)

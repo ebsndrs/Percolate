@@ -6,35 +6,37 @@ using System;
 
 namespace Percolate.Parsers
 {
-    static class PagingParser
+    internal static class PagingParser
     {
-        static PagingModel ParsePagingParameters(ActionExecutedContext actionExecutedContext)
+        internal static PagingModel ParsePagingParameters(ActionExecutedContext actionExecutedContext)
         {
             var PagingModel = new PagingModel();
 
             if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("page"))
             {
-                PagingModel.Page = ParsePageParameter(actionExecutedContext.HttpContext.Request.Query["page"]);
+                var queryStrings = actionExecutedContext.HttpContext.Request.Query["page"].ToString().Split(',');
+                PagingModel.Page = ParsePageParameter(queryStrings);
             }
 
             if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("pageSize"))
             {
-                PagingModel.PageSize = ParsePageSizeParameter(actionExecutedContext.HttpContext.Request.Query["pageSize"]);
+                var queryStrings = actionExecutedContext.HttpContext.Request.Query["pageSize"].ToString().Split(',');
+                PagingModel.PageSize = ParsePageSizeParameter(queryStrings);
             }
 
             return PagingModel;
         }
 
-        private static int ParsePageParameter(StringValues rawValues)
+        private static int ParsePageParameter(string[] queryStrings)
         {
-            if (rawValues.Count != 1)
+            if (queryStrings.Length != 1)
             {
                 throw new ParameterParsingException();
             }
 
             try
             {
-                return int.Parse(rawValues[0]);
+                return int.Parse(queryStrings[0]);
             }
             catch (FormatException)
             {
@@ -42,16 +44,16 @@ namespace Percolate.Parsers
             }
         }
 
-        private static int ParsePageSizeParameter(StringValues rawValues)
+        private static int ParsePageSizeParameter(string[] queryStrings)
         {
-            if (rawValues.Count != 1)
+            if (queryStrings.Length != 1)
             {
                 throw new ParameterParsingException();
             }
 
             try
             {
-                return int.Parse(rawValues[0]);
+                return int.Parse(queryStrings[0]);
             }
             catch (FormatException)
             {

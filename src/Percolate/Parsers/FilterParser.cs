@@ -7,46 +7,47 @@ using System.Linq;
 
 namespace Percolate.Parsers
 {
-    static class FilterParser
+    internal static class FilterParser
     {
-        private static readonly Dictionary<FilterOperator, string> OperatorDictionary = new Dictionary<FilterOperator, string>()
+        private static readonly Dictionary<FilterOperator, string> operatorDictionary = new Dictionary<FilterOperator, string>()
         {
             { FilterOperator.Equals, "==" },
             { FilterOperator.DoesNotEqual, "!=" },
-            { FilterOperator.GreaterThan, ">" },
-            { FilterOperator.LessThan, "<" },
             { FilterOperator.GreaterThanOrEqual, ">=" },
             { FilterOperator.LessThanOrEqual, "<=" },
+            { FilterOperator.GreaterThan, ">" },
+            { FilterOperator.LessThan, "<" },
         };
 
-        static FilterModel ParseFilterParameter(ActionExecutedContext actionExecutedContext)
+        internal static FilterModel ParseFilterParameter(ActionExecutedContext actionExecutedContext)
         {
             var sortModel = new FilterModel();
 
             if (actionExecutedContext.HttpContext.Request.Query.ContainsKey("filter"))
             {
-                sortModel.Nodes = ParseFilterParameterNodes(actionExecutedContext.HttpContext.Request.Query["filter"]);
+                var queryStrings = actionExecutedContext.HttpContext.Request.Query["filter"].ToString().Split(',');
+                sortModel.Nodes = ParseFilterParameterNodes(queryStrings);
             }
 
             return sortModel;
         }
 
-        private static IEnumerable<FilterNode> ParseFilterParameterNodes(StringValues rawValues)
+        private static IEnumerable<FilterNode> ParseFilterParameterNodes(string[] queryStrings)
         {
-            return rawValues.Select(value => ParseFilterParameterNode(value));
+            return queryStrings.Select(queryString => ParseFilterParameterNode(queryString));
         }
 
-        private static FilterNode ParseFilterParameterNode(string rawValue)
+        private static FilterNode ParseFilterParameterNode(string queryString)
         {
             bool operatorSearchFailed = true;
             FilterOperator? filterOperator = null;
             string[] values = new string[3];
 
-            foreach (var op in OperatorDictionary)
+            foreach (var op in operatorDictionary)
             {
-                if (rawValue.Split(op.Value).Length == 3)
+                if (queryString.Contains(op.Value))
                 {
-                    values = rawValue.Split(op.Value);
+                    values = queryString.Split(op.Value);
                     filterOperator = op.Key;
                     operatorSearchFailed = false;
                     break;
@@ -62,7 +63,7 @@ namespace Percolate.Parsers
             {
                 PropertyName = values[0],
                 Operator = filterOperator.Value,
-                FilterValue = values[2]
+                FilterValue = values[1]
             };
         }
     }
