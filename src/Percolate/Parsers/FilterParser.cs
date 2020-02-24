@@ -53,7 +53,6 @@ namespace Percolate.Parsers
                     var next = queryString[i + 1];
 
                     /* now, evaluate what the current char is. If it's one of our potential filter operators,
-                     * now, evaluate what the current char is. If it's one of our potential filter operators, 
                      * break the loop because we've identified the operator that query string is using.
                      * This allows for a queryString like abc==<=!=xyz to be valid: it will evaluate to abc (==) <=!=xyz
                      * We did it this way because the filter value might contain characters that are possible operators.
