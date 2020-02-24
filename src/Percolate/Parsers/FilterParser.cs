@@ -47,14 +47,15 @@ namespace Percolate.Parsers
                 //only evaluate chars that aren't the first or last chars of the string
                 if (i > 0 && i < queryString.Length - 1)
                 {
-                    //grab the current, next, and previous chars
+                    //grab the current, next, and previous chars for convenience
                     var current = queryString[i];
                     var previous = queryString[i - 1];
                     var next = queryString[i + 1];
 
                     /* now, evaluate what the current char is. If it's one of our potential filter operators,
                      * break the loop because we've identified the operator that query string is using.
-                     * This allows for a queryString like abc==<=!=xyz to be valid: it will evaluate to abc (==) <=!=xyz
+                     * This allows for a queryString like abc==<=!=xyz to be valid: it will evaluate to abc (==) <=!=xyz.
+                     * Any additional operators after the first one will be part of the filter value.
                      * We did it this way because the filter value might contain characters that are possible operators.
                      * For example, one might want to filter on a string that contains a ! character. This is the most generous
                      * parsing possible. Further checks on the value can be performed in the validation step.
