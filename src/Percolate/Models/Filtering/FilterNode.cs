@@ -1,11 +1,19 @@
-﻿namespace Percolate.Models.Filtering
+﻿using System.Collections.Generic;
+
+namespace Percolate.Models.Filtering
 {
     public class FilterNode
     {
-        public string PropertyName { get; set; }
+        public string RawNode { get; set; }
 
-        public FilterOperator Operator { get; set; }
+        public IEnumerable<string> Properties { get; set; }
 
-        public string FilterValue { get; set; }
+        public IEnumerable<string> Values { get; set; }
+
+        public string Operator { get; set; }
+
+        public FilterOperator ParsedOperator { get; set; }
+
+        public bool IsOperatorNegated { get; set; }
     }
 }

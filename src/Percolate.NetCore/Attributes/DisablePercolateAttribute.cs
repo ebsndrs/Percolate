@@ -3,7 +3,7 @@
 namespace Percolate.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class DisablePercolateAttribute : Attribute
+    public sealed class DisablePercolateAttribute : Attribute
     {
     }
 }

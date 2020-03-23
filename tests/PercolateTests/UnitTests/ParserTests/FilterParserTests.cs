@@ -19,7 +19,7 @@ namespace PercolateTests.UnitTests.ParserTests
         {
             var queryCollection = new QueryCollection();
 
-            var result = FilterParser.ParseFilterParameter(queryCollection);
+            var result = FilterParser.ParseFilterQuery(queryCollection);
 
             Assert.Empty(result.Nodes);
         }
@@ -27,65 +27,172 @@ namespace PercolateTests.UnitTests.ParserTests
         [Fact]
         public void ParseFilterParameters_WhenCalledWithValidQueryParameter_ReturnsParsedValues()
         {
-            //Disable the switch code warning because we know our switch will always return some value
-#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
+            var expectedResults = new List<FilterNode>
+            {
+                new FilterNode
+                {
+                    RawNode = "name=James",
+                    Properties = new string[] { "name" },
+                    Values = new string[] { "James" },
+                    Operator = "=",
+                    ParsedOperator = FilterOperator.Equals,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "country!=USA",
+                    Properties = new string[] { "country" },
+                    Values = new string[] { "USA" },
+                    Operator = "!=",
+                    ParsedOperator = FilterOperator.DoesNotEqual,
+                    IsOperatorNegated = true
+                },
+                new FilterNode
+                {
+                    RawNode = "age>20",
+                    Properties = new string[] { "age" },
+                    Values = new string[] { "20" },
+                    Operator = ">",
+                    ParsedOperator = FilterOperator.GreaterThan,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = $"birthday<12/2/1994",
+                    Properties = new string[] { "birthday" },
+                    Values = new string[] { "12/2/1994" },
+                    Operator = "<",
+                    ParsedOperator = FilterOperator.LessThan,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "likes>=20",
+                    Properties = new string[] { "likes" },
+                    Values = new string[] { "20" },
+                    Operator = ">=",
+                    ParsedOperator = FilterOperator.GreaterThanOrEqual,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "posts<=10",
+                    Properties = new string[] { "posts" },
+                    Values = new string[] { "10" },
+                    Operator = "<=",
+                    ParsedOperator = FilterOperator.LessThanOrEqual,
+                    IsOperatorNegated = false
+                },
 
-            //first, let's add some "normal" filter strings
-            var filterString = "foo==bar,spam!=eggs,pie>1,lol<49,bippity>=boppity,giveMe<=theZoppity";
+                //some wonky ones with multiple operators
+                new FilterNode
+                {
+                    RawNode = "x=!>=!==y",
+                    Properties = new string[] { "x" },
+                    Values = new string[] { "!>=!==y" },
+                    Operator = "=",
+                    ParsedOperator = FilterOperator.Equals,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "i=<=>=!==<>j",
+                    Properties = new string[] { "i" },
+                    Values = new string[] { "<=>=!==<>j" },
+                    Operator = "=",
+                    ParsedOperator = FilterOperator.Equals,
+                    IsOperatorNegated = false
+                },
 
-            //next, let's add some oddities
-            filterString.Concat(",x=!>=!===y,i==<=>=!===<>j");
+                //some ones with pipe delimited properties and values
+                new FilterNode
+                {
+                    RawNode = "age|posts>20",
+                    Properties = new string[] { "age", "posts"},
+                    Values = new string[] { "20"},
+                    Operator = ">",
+                    ParsedOperator = FilterOperator.GreaterThan,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "name=Amy|Joe",
+                    Properties = new string[] { "name" },
+                    Values = new string[] { "Amy", "Joe"},
+                    Operator = "=",
+                    ParsedOperator = FilterOperator.Equals,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "age|posts!=13|45",
+                    Properties = new string[] { "age", "posts" },
+                    Values = new string[] { "13", "45" },
+                    Operator = "!=",
+                    ParsedOperator = FilterOperator.DoesNotEqual,
+                    IsOperatorNegated = true
+                },
 
-            var filterArray = filterString.Split(',');
+                //and some with escaped pipes and commas in the value
+                new FilterNode
+                {
+                    RawNode = @"text=hello\, world!",
+                    Properties = new string[] { "text" },
+                    Values = new string[] { "hello, world!" },
+                    Operator = "=",
+                    ParsedOperator = FilterOperator.Equals,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = @"text=i\|hate\|regex",
+                    Properties = new string[] { "text" },
+                    Values = new string[] { "i|hate|regex" },
+                    Operator = "=",
+                    ParsedOperator = FilterOperator.Equals,
+                    IsOperatorNegated = false
+                },
+                new FilterNode
+                {
+                    RawNode = "name|city!=Jane Doe|Pawnee",
+                    Properties = new string[] { "name", "city" },
+                    Values = new string[] { "Jane Doe", "Pawnee" },
+                    Operator = "!=",
+                    ParsedOperator = FilterOperator.DoesNotEqual,
+                    IsOperatorNegated = true
+                }
+            };
 
             var store = new Dictionary<string, StringValues>()
             {
-                { "filter", filterString }
+                { "filter", string.Join(',', expectedResults.Select(node => node.RawNode)) }
             };
 
             var queryCollection = new QueryCollection(store);
 
-            var result = FilterParser.ParseFilterParameter(queryCollection);
+            var result = FilterParser.ParseFilterQuery(queryCollection);
 
-            for (int i = 0; i < filterArray.Length; i++)
+            var resultNodes = result.Nodes.ToList();
+            
+            foreach (var node in resultNodes)
             {
-                var item = filterArray[i];
-                var resultToCompare = result.Nodes.ElementAt(i);
+                //for any given node, the index of expected results and the parsed results should match
+                var expectedResult = expectedResults.ElementAt(resultNodes.IndexOf(node));
 
-                var operatorToTest = item switch
-                {
-                    "foo==bar" => FilterOperator.Equals,
-                    "spam!=eggs" => FilterOperator.DoesNotEqual,
-                    "pie>1" => FilterOperator.GreaterThan,
-                    "lol<49" => FilterOperator.LessThan,
-                    "bippity>=boppity" => FilterOperator.GreaterThanOrEqual,
-                    "giveMe<=theZoppity" => FilterOperator.LessThanOrEqual,
-                    "x=!>=!===y" => FilterOperator.GreaterThanOrEqual,
-                    "i==<=>=!===<>j" => FilterOperator.Equals
-                };
-
-                var splitItem = operatorToTest switch
-                {
-                    FilterOperator.Equals => item.Split("==", 2),
-                    FilterOperator.DoesNotEqual => item.Split("!=", 2),
-                    FilterOperator.GreaterThan => item.Split(">", 2),
-                    FilterOperator.LessThan => item.Split("<", 2),
-                    FilterOperator.GreaterThanOrEqual => item.Split(">=", 2),
-                    FilterOperator.LessThanOrEqual => item.Split("<=", 2)
-                };
-
-                Assert.Equal(splitItem[0], resultToCompare.PropertyName);
-                Assert.Equal(operatorToTest, resultToCompare.Operator);
-                Assert.Equal(splitItem[1], resultToCompare.FilterValue);
+                Assert.Equal(expectedResult.RawNode, node.RawNode);
+                Assert.Equal(expectedResult.Properties, node.Properties);
+                Assert.Equal(expectedResult.Values, node.Values);
+                Assert.Equal(expectedResult.Operator, node.Operator);
+                Assert.Equal(expectedResult.ParsedOperator, node.ParsedOperator);
+                Assert.Equal(expectedResult.IsOperatorNegated, node.IsOperatorNegated);
             }
-#pragma warning restore CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
         }
 
         [Fact]
-        public void ParserFilterParameters_WhenCalledWithInvalidParameter_ThrowsException()
+        public void ParseFilterParameters_WhenCalledWithInvalidParameter_ThrowsException()
         {
             //invalid operator "=!="
-            var filterString = "foo=!=bar";
+            var filterString = "foo=";
 
             var store = new Dictionary<string, StringValues>()
             {
@@ -94,14 +201,7 @@ namespace PercolateTests.UnitTests.ParserTests
 
             var queryCollection = new QueryCollection(store);
 
-            try
-            {
-                var result = FilterParser.ParseFilterParameter(queryCollection);
-            }
-            catch (Exception e)
-            {
-                Assert.True(e is ParameterParsingException);
-            }
+            Assert.Throws<ParameterParsingException>(() => FilterParser.ParseFilterQuery(queryCollection));
         }
     }
 }

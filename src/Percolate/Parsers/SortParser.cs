@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Percolate.Models.Sorting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,7 +15,7 @@ namespace Percolate.Parsers
 
             if (queryCollection.ContainsKey("sort"))
             {
-                var queryStrings = queryCollection["sort"].ToString().Split(',');
+                var queryStrings = queryCollection["sort"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
                 sortModel.Nodes = ParseSortParameterNodes(queryStrings);
             }
 

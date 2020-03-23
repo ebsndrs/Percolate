@@ -7,19 +7,19 @@ namespace Percolate.Parsers
 {
     public static class PagingParser
     {
-        public static PagingModel ParsePagingParameters(IQueryCollection queryCollection)
+        public static PageModel ParsePagingParameters(IQueryCollection queryCollection)
         {
-            var pagingModel = new PagingModel();
+            var pagingModel = new PageModel();
 
             if (queryCollection.ContainsKey("page"))
             {
-                var queryStrings = queryCollection["page"].ToString().Split(',');
+                var queryStrings = queryCollection["page"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
                 pagingModel.Page = ParsePageParameter(queryStrings);
             }
 
             if (queryCollection.ContainsKey("pageSize"))
             {
-                var queryStrings = queryCollection["pageSize"].ToString().Split(',');
+                var queryStrings = queryCollection["pageSize"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
                 pagingModel.PageSize = ParsePageSizeParameter(queryStrings);
             }
 

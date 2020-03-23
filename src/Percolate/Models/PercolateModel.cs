@@ -4,9 +4,9 @@ using Percolate.Models.Sorting;
 
 namespace Percolate.Models
 {
-    class PercolateModel
+    public class PercolateModel
     {
-        public PagingModel PageModel { get; set; }
+        public PageModel PageModel { get; set; }
 
         public SortModel SortModel { get; set; }
 

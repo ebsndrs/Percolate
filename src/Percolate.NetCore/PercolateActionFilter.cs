@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Percolate.Attributes;
+using Percolate.Models;
+using Percolate.Parsers;
 
 namespace Percolate
 {
@@ -17,7 +20,14 @@ namespace Percolate
         {
             if (ShouldApplyQuery(service.Options.EnablePercolateGlobally, context.ActionDescriptor))
             {
-                //percolate!
+                var temp = new PercolateModel()
+                {
+                    PageModel = PagingParser.ParsePagingParameters(context.HttpContext.Request.Query),
+                    SortModel = SortParser.ParseSortParameter(context.HttpContext.Request.Query),
+                    FilterModel = FilterParser.ParseFilterQuery(context.HttpContext.Request.Query)
+                };
+
+                context.Result = new OkObjectResult(temp);
             }
         }
 

@@ -3,7 +3,7 @@
 namespace Percolate.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class EnablePercolateAttribute : Attribute
+    public sealed class EnablePercolateAttribute : Attribute
     {
         public bool AllowPaging { get; set; }
 
