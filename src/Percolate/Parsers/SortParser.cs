@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Percolate.Exceptions;
 using Percolate.Models.Sorting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -16,36 +16,38 @@ namespace Percolate.Parsers
             if (queryCollection.ContainsKey("sort"))
             {
                 var queryStrings = queryCollection["sort"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                sortModel.Nodes = ParseSortParameterNodes(queryStrings);
+                sortModel.Nodes = queryStrings.Select(queryString => ParseSortParameterNode(queryString));
             }
 
             return sortModel;
         }
 
-        private static IEnumerable<SortNode> ParseSortParameterNodes(string[] queryStrings)
+        private static SortNode ParseSortParameterNode(string value)
         {
-            return queryStrings.Select(queryString => ParseSortParameterNode(queryString));
-        }
+            var pattern = @"^[-]?\w+$";
 
-        private static SortNode ParseSortParameterNode(string rawValue)
-        {
-            var pattern = @"^[-]{1}\w+";
-
-            if (Regex.IsMatch(rawValue, pattern))
+            if (Regex.IsMatch(value, pattern))
             {
-                return new SortNode
+                if (value.StartsWith('-'))
                 {
-                    PropertyName = rawValue.Replace("-", string.Empty),
-                    Direction = SortDirection.Descending
-                };
+                    return new SortNode
+                    {
+                        PropertyName = value.Replace("-", string.Empty),
+                        Direction = SortDirection.Descending
+                    };
+                }
+                else
+                {
+                    return new SortNode
+                    {
+                        PropertyName = value,
+                        Direction = SortDirection.Ascending
+                    };
+                }
             }
             else
             {
-                return new SortNode
-                {
-                    PropertyName = rawValue,
-                    Direction = SortDirection.Ascending
-                };
+                throw new ParameterParsingException();
             }
         }
     }

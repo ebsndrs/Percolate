@@ -14,36 +14,19 @@ namespace Percolate.Parsers
             if (queryCollection.ContainsKey("page"))
             {
                 var queryStrings = queryCollection["page"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                pagingModel.Page = ParsePageParameter(queryStrings);
+                pagingModel.Page = ParseIntParameter(queryStrings);
             }
 
             if (queryCollection.ContainsKey("pageSize"))
             {
                 var queryStrings = queryCollection["pageSize"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                pagingModel.PageSize = ParsePageSizeParameter(queryStrings);
+                pagingModel.PageSize = ParseIntParameter(queryStrings);
             }
 
             return pagingModel;
         }
 
-        private static int ParsePageParameter(string[] queryStrings)
-        {
-            if (queryStrings.Length != 1)
-            {
-                throw new ParameterParsingException();
-            }
-
-            try
-            {
-                return int.Parse(queryStrings[0]);
-            }
-            catch (FormatException)
-            {
-                throw new ParameterParsingException();
-            }
-        }
-
-        private static int ParsePageSizeParameter(string[] queryStrings)
+        private static int ParseIntParameter(string[] queryStrings)
         {
             if (queryStrings.Length != 1)
             {

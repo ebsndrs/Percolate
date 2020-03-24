@@ -21,14 +21,7 @@ namespace Percolate.Parsers
             {
                 var filterQueries = Regex.Split(queryCollection["filter"], escapedCommaPattern);
 
-                try
-                {
-                    filterModel.Nodes = filterQueries.Select(queryString => ParseFilterNode(queryString));
-                }
-                catch (ParameterParsingException e)
-                {
-                    throw;
-                }
+                filterModel.Nodes = filterQueries.Select(queryString => ParseFilterNode(queryString));
             }
 
             return filterModel;
@@ -36,6 +29,7 @@ namespace Percolate.Parsers
 
         private static FilterNode ParseFilterNode(string value)
         {
+            //find the operator; it'll be the first appearing operator in the string
             string @operator = FindOperator(value);
 
             FilterOperator? parsedOperator = @operator switch
@@ -52,7 +46,7 @@ namespace Percolate.Parsers
             if (parsedOperator == null)
                 throw new ParameterParsingException();
 
-            //now split the value by the operator
+            //split the value by the operator
             var filterSplit = value
                 .Split(@operator, 2, System.StringSplitOptions.RemoveEmptyEntries)
                 .Select(t => t.Trim())
@@ -61,6 +55,7 @@ namespace Percolate.Parsers
             if (filterSplit.Length != 2)
                 throw new ParameterParsingException();
 
+            //now split any pipe delimited strings and clean up the escape characters
             var filterProperties = Regex
                 .Split(filterSplit[0], escapedPipePattern)
                 .Select(filterProperty => filterProperty.Replace("\\", ""));

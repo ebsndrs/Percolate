@@ -24,6 +24,10 @@ namespace PercolateTests.UnitTests.ParserTests
             Assert.Empty(result.Nodes);
         }
 
+        /*
+         * We might consider breaking out these test methods; perhaps one with "normal" query strings,
+         * one  with crazy wonky strings with multiple operators, and one with pipe delimiters?
+         */
         [Fact]
         public void ParseFilterParameters_WhenCalledWithValidQueryParameter_ReturnsParsedValues()
         {
@@ -201,7 +205,17 @@ namespace PercolateTests.UnitTests.ParserTests
 
             var queryCollection = new QueryCollection(store);
 
-            Assert.Throws<ParameterParsingException>(() => FilterParser.ParseFilterQuery(queryCollection));
+            /*
+             * At this point, you might think, "Why not just call Assert.Throws with () => FilterParser.ParseFilterQuery(queryCollection)?
+             * We have to write the test this way because ParseFilterQuery() does not explicitly enumerate the list of nodes;
+             * it projects them using a select statement. Thus, the expected exception is never *actually* thrown.
+             * For normal operations, this is fine, because it defers the enumeration until we actually need it.
+             * But we didn't want to rewrite the business logic for a test, so we wrote the test to enumerate the list of nodes.
+             */
+
+            var result = FilterParser.ParseFilterQuery(queryCollection);
+
+            Assert.Throws<ParameterParsingException>(() => result.Nodes.ToList());
         }
     }
 }
