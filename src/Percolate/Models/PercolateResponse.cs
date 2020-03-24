@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Percolate.Models
+﻿namespace Percolate.Models
 {
-    public class PercolateResponse
+    public class PercolateResponse<T> where T : class
     {
-        public PercolateModel Metadata { get; set; }
+        public T Value { get; set; }
+
+        public QueryModel Metadata { get; set; }
     }
 }

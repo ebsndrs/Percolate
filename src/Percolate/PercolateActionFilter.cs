@@ -2,33 +2,41 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Percolate.Attributes;
+using Percolate.Exceptions;
 using Percolate.Models;
 using Percolate.Parsers;
 
 namespace Percolate
 {
-    public class PercolateActionFilter : IActionFilter
+    public class PercolateActionFilter<TPercolateModel> : IActionFilter where TPercolateModel : PercolateModel
     {
-        private readonly IPercolateService service;
+        private readonly IPercolateService<TPercolateModel> service;
 
-        public PercolateActionFilter(IPercolateService service)
+        public PercolateActionFilter(IPercolateService<TPercolateModel> service)
         {
             this.service = service;
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (ShouldApplyQuery(service.Options.EnablePercolateGlobally, context.ActionDescriptor))
-            {
-                var temp = new PercolateModel()
-                {
-                    PageModel = PageParser.ParsePagingParameters(context.HttpContext.Request.Query),
-                    SortModel = SortParser.ParseSortParameter(context.HttpContext.Request.Query),
-                    FilterModel = FilterParser.ParseFilterQuery(context.HttpContext.Request.Query)
-                };
+            context.Result = new OkObjectResult(service.Model);
 
-                context.Result = new OkObjectResult(temp);
-            }
+            //if (ShouldApplyQuery(service.Options.EnablePercolateGlobally, context.ActionDescriptor))
+            //{
+            //    try
+            //    {
+            //        var queryModel = service.BuildQueryModel(context.HttpContext.Request.Query);
+
+            //    }
+            //    catch (PercolateException)
+            //    {
+            //        if (!service.Options.FailSilently)
+            //        {
+            //            throw;
+            //        }
+            //    }
+
+            //}
         }
 
         public void OnActionExecuting(ActionExecutingContext context) { }

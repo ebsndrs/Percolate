@@ -5,7 +5,7 @@ using System;
 
 namespace Percolate.Parsers
 {
-    public static class PagingParser
+    public static class PageParser
     {
         public static PageModel ParsePagingParameters(IQueryCollection queryCollection)
         {

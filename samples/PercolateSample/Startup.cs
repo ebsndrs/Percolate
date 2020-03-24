@@ -19,8 +19,8 @@ namespace PercolateSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddPercolate();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddPercolate<SamplePercolateModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

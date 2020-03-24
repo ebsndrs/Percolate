@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Percolate.NetCore.Attributes
+namespace Percolate.Attributes
 {
     internal static class AttributeHelper
     {

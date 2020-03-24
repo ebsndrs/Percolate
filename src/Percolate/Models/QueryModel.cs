@@ -4,7 +4,7 @@ using Percolate.Models.Sorting;
 
 namespace Percolate.Models
 {
-    public class PercolateModel
+    public class QueryModel
     {
         public PageModel PageModel { get; set; }
 

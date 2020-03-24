@@ -2,7 +2,7 @@
 
 namespace Percolate.Exceptions
 {
-    public class ParameterParsingException : Exception
+    public class ParameterParsingException : PercolateException
     {
         public ParameterParsingException() { }
 

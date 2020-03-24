@@ -15,7 +15,7 @@ namespace PercolateTests.UnitTests.ParserTests
         {
             var queryCollection = new QueryCollection();
 
-            var result = PagingParser.ParsePagingParameters(queryCollection);
+            var result = PageParser.ParsePagingParameters(queryCollection);
 
             Assert.Null(result.Page);
             Assert.Null(result.PageSize);
@@ -34,7 +34,7 @@ namespace PercolateTests.UnitTests.ParserTests
 
             try
             {
-                var result = PagingParser.ParsePagingParameters(queryCollection);
+                var result = PageParser.ParsePagingParameters(queryCollection);
             }
             catch (Exception e)
             {
@@ -56,7 +56,7 @@ namespace PercolateTests.UnitTests.ParserTests
 
             var queryCollection = new QueryCollection(store);
 
-            var result = PagingParser.ParsePagingParameters(queryCollection);
+            var result = PageParser.ParsePagingParameters(queryCollection);
 
             Assert.Equal(page, result.Page);
             Assert.Equal(pageSize, result.PageSize);
