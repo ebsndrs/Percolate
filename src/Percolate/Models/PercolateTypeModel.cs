@@ -9,10 +9,6 @@ namespace Percolate.Models
     {
         public PercolateTypeModel()
         {
-            Properties = new List<PercolatePropertyModel>();
-
-            var properties = typeof(TType).GetProperties();
-
             Properties = typeof(TType)
                 .GetProperties()
                 .Select(p => new PercolatePropertyModel(p))

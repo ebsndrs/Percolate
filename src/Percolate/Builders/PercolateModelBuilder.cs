@@ -4,32 +4,30 @@ namespace Percolate.Builders
 {
     public class PercolateModelBuilder
     {
-        protected PercolateModel model;
-
         public PercolateModelBuilder()
         {
-            model = new PercolateModel(this);
+            Model = new PercolateModel(this);
         }
+
+        internal PercolateModel Model { get; set; }
 
         public PercolateTypeBuilder<TType> Type<TType>() where TType : class
         {
-            PercolateTypeBuilder<TType> builder;
+            PercolateTypeBuilder<TType> typeBuilder;
 
-            var existingModel = model.Types.FirstOrDefault(t => t.Type is TType);
+            var existingTypeModel = Model.Types.FirstOrDefault(t => t.Type is TType);
 
-            if (existingModel != null)
+            if (existingTypeModel == null)
             {
-                builder = new PercolateTypeBuilder<TType>(existingModel);
+                typeBuilder = new PercolateTypeBuilder<TType>();
+                Model.Types.Add(typeBuilder.Model);
             }
             else
             {
-                builder = new PercolateTypeBuilder<TType>();
-                model.Types.Add(builder.Build());
+                typeBuilder = new PercolateTypeBuilder<TType>(existingTypeModel);
             }
 
-            return builder;
+            return typeBuilder;
         }
-
-        internal PercolateModel Build() => model;
     }
 }

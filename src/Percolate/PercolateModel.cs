@@ -6,8 +6,6 @@ namespace Percolate
 {
     public class PercolateModel
     {
-        protected PercolateModelBuilder ModelBuilder;
-
         public PercolateModel()
         {
             Types = new List<IPercolateTypeModel>();
@@ -19,7 +17,7 @@ namespace Percolate
 
             Configure(ModelBuilder);
 
-            Types = ModelBuilder.Build().Types;
+            Types = ModelBuilder.Model.Types;
         }
 
         public PercolateModel(PercolateModelBuilder modelBuilder)
@@ -35,6 +33,8 @@ namespace Percolate
                 ModelBuilder = modelBuilder;
             }
         }
+
+        public PercolateModelBuilder ModelBuilder { get; set; }
 
         public List<IPercolateTypeModel> Types { get; set; }
 

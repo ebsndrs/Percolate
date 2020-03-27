@@ -5,30 +5,30 @@ namespace Percolate.Builders
 {
     public class PercolatePropertyBuilder<TProperty>
     {
-        protected PercolatePropertyModel model;
-
         public PercolatePropertyBuilder(PropertyInfo propertyInfo)
         {
-            model = new PercolatePropertyModel(propertyInfo);
+            Model = new PercolatePropertyModel(propertyInfo);
+
+
         }
 
         public PercolatePropertyBuilder(PercolatePropertyModel model)
         {
-            this.model = model;
+            Model = model;
         }
+
+        internal PercolatePropertyModel Model { get; set; }
      
         public PercolatePropertyBuilder<TProperty> AllowSorting(bool allowSorting = true)
         {
-            model.IsSortable = allowSorting;
+            Model.IsSortable = allowSorting;
             return this;
         }
 
         public PercolatePropertyBuilder<TProperty> AllowFiltering(bool allowFiltering = true)
         {
-            model.IsFilterable = allowFiltering;
+            Model.IsFilterable = allowFiltering;
             return this;
         }
-
-        internal PercolatePropertyModel Build() => model;
     }
 }
