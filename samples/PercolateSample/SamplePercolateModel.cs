@@ -6,11 +6,11 @@ namespace PercolateSample
 {
     public class SamplePercolateModel : PercolateModel
     {
-        //public SamplePercolateModel() : base() { }
-
         public override void Configure(PercolateModelBuilder modelBuilder)
         {
             modelBuilder.Type<Person>();
+
+            modelBuilder.Type<Place>();
         }
     }
 }

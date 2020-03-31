@@ -27,54 +27,40 @@ namespace PercolateTests.UnitTests.ParserTests
         {
             var sortString = "foo,-bar,spam,-eggs";
 
-            var sortArray = sortString.Split(',');
+            var sortList = sortString.Split(',').ToList();
 
-            var store = new Dictionary<string, StringValues>()
+            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>()
             {
                 { "sort", sortString }
-            };
-
-            var queryCollection = new QueryCollection(store);
+            });
 
             var result = SortParser.ParseSortParameter(queryCollection);
 
-            for (int i = 0; i < sortArray.Length; i++)
+            var resultNodes = result.Nodes.ToList();
+
+            Assert.All(resultNodes, (node) =>
             {
-                var item = sortArray[i];
-                var resultToCompare = result.Nodes.ElementAt(i);
-                var directionToCompare = item.StartsWith('-') ? SortQueryDirection.Descending : SortQueryDirection.Ascending;
+                var itemToCompareAgainst = sortList.ElementAt(resultNodes.IndexOf(node));
+                var directionToCompare = itemToCompareAgainst.StartsWith('-') ? SortQueryDirection.Descending : SortQueryDirection.Ascending;
 
                 if (directionToCompare == SortQueryDirection.Ascending)
-                {
-                    Assert.Equal(item, resultToCompare.PropertyName);
-                }
+                    Assert.Equal(itemToCompareAgainst, node.PropertyName);
                 else
-                {
-                    Assert.Equal(item.Replace("-", string.Empty), resultToCompare.PropertyName);
-                }
+                    Assert.Equal(itemToCompareAgainst.Remove(0, 1), node.PropertyName);
 
-                Assert.Equal(directionToCompare, resultToCompare.Direction);
-            }
+                Assert.Equal(directionToCompare, node.Direction);
+            });
         }
 
         [Fact]
         public void ParseSortParameters_WhenCalledWithInvalidQueryParameter_ThrowsException()
         {
-            var store = new Dictionary<string, StringValues>()
+            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>()
             {
                 { "sort", "foo,-bar,>=spam" }
-            };
+            });
 
-            var queryCollection = new QueryCollection(store);
-
-            try
-            {
-                var result = SortParser.ParseSortParameter(queryCollection);
-            }
-            catch (Exception e)
-            {
-                Assert.True(e is ParameterParsingException);
-            }
+            Assert.Throws<ParameterParsingException>(() => SortParser.ParseSortParameter(queryCollection).Nodes.ToList());
         }
     }
 }

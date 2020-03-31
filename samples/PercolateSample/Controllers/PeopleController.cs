@@ -2,6 +2,7 @@
 using Percolate.Attributes;
 using PercolateSample.Models;
 using System;
+using System.Linq;
 
 namespace PercolateSample.Controllers
 {
@@ -10,6 +11,7 @@ namespace PercolateSample.Controllers
     public class PeopleController : ControllerBase
     {
         [HttpGet]
+        //[EnablePercolate]
         [EnablePercolate]
         public IActionResult Get()
         {

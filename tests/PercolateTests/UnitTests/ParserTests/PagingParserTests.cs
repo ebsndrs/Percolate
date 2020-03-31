@@ -24,42 +24,61 @@ namespace PercolateTests.UnitTests.ParserTests
         [Fact]
         public void ParsePagingParameters_WhenCalledWithNonIntParameters_ThrowsException()
         {
-            var store = new Dictionary<string, StringValues>()
+            //non-int page
+            var queryCollection1 = new QueryCollection(new Dictionary<string, StringValues>()
             {
                 { "page", "foo" },
+                { "pageSize", "10" }
+            });
+
+            //non-int pageSize
+            var queryCollection2 = new QueryCollection(new Dictionary<string, StringValues>()
+            {
+                { "page", "1" },
                 { "pageSize", "bar" }
-            };
+            });
 
-            var queryCollection = new QueryCollection(store);
-
-            try
-            {
-                var result = PageParser.ParsePagingParameters(queryCollection);
-            }
-            catch (Exception e)
-            {
-                Assert.True(e is ParameterParsingException);
-            }
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection1));
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection2));
         }
 
         [Fact]
         public void ParsePagingParameters_WhenCalledWithValidParameters_ReturnsParsedValues()
         {
-            int page = 1;
-            int pageSize = 10;
+            int page = int.MaxValue;
+            int pageSize = int.MaxValue;
 
-            var store = new Dictionary<string, StringValues>()
+            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>()
             {
                 { "page", page.ToString() },
                 { "pageSize", pageSize.ToString() }
-            };
-
-            var queryCollection = new QueryCollection(store);
+            });
 
             var result = PageParser.ParsePagingParameters(queryCollection);
 
             Assert.Equal(page, result.Page);
             Assert.Equal(pageSize, result.PageSize);
+        }
+
+        [Fact]
+        public void ParsePageParameters_WhenCalledWithOverflowIntParameters_ThrowsException()
+        {
+            //overflowing page
+            var queryCollection1 = new QueryCollection(new Dictionary<string, StringValues>()
+            {
+                { "page", int.MaxValue.ToString() + "1" },
+                { "pageSize", "100" }
+            });
+
+            //overflowing pageSize
+            var queryCollection2 = new QueryCollection(new Dictionary<string, StringValues>()
+            {
+                { "page", "1" },
+                { "pageSize", int.MaxValue.ToString() + "1" }
+            });
+
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection1));
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection2));
         }
     }
 }

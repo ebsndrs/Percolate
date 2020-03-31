@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Percolate.Attributes;
 using Percolate.Exceptions;
 using Percolate.Models;
-using System;
 using System.Collections;
 using System.Linq;
 

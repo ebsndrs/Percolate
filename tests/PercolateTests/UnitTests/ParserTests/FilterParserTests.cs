@@ -167,18 +167,16 @@ namespace PercolateTests.UnitTests.ParserTests
                 }
             };
 
-            var store = new Dictionary<string, StringValues>()
+            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>()
             {
                 { "filter", string.Join(',', expectedResults.Select(node => node.RawNode)) }
-            };
-
-            var queryCollection = new QueryCollection(store);
+            });
 
             var result = FilterParser.ParseFilterQuery(queryCollection);
 
             var resultNodes = result.Nodes.ToList();
             
-            foreach (var node in resultNodes)
+            Assert.All(resultNodes, (node) =>
             {
                 //for any given node, the index of expected results and the parsed results should match
                 var expectedResult = expectedResults.ElementAt(resultNodes.IndexOf(node));
@@ -189,13 +187,13 @@ namespace PercolateTests.UnitTests.ParserTests
                 Assert.Equal(expectedResult.Operator, node.Operator);
                 Assert.Equal(expectedResult.ParsedOperator, node.ParsedOperator);
                 Assert.Equal(expectedResult.IsOperatorNegated, node.IsOperatorNegated);
-            }
+            });
         }
 
+        //TODO: rewrite this entire test to account for more invalid parameters
         [Fact]
         public void ParseFilterParameters_WhenCalledWithInvalidParameter_ThrowsException()
         {
-            //invalid operator "=!="
             var filterString = "foo=";
 
             var store = new Dictionary<string, StringValues>()
