@@ -6,10 +6,10 @@ namespace Percolate.Models
 {
     public class QueryModel
     {
-        public PageModel PageModel { get; set; }
+        public PageQueryModel PageQueryModel { get; set; }
 
-        public SortModel SortModel { get; set; }
+        public SortQueryModel SortQueryModel { get; set; }
 
-        public FilterModel FilterModel { get; set; }
+        public FilterQueryModel FilterQueryModel { get; set; }
     }
 }

@@ -31,138 +31,138 @@ namespace PercolateTests.UnitTests.ParserTests
         [Fact]
         public void ParseFilterParameters_WhenCalledWithValidQueryParameter_ReturnsParsedValues()
         {
-            var expectedResults = new List<FilterNode>
+            var expectedResults = new List<FilterQueryNode>
             {
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "name=James",
                     Properties = new string[] { "name" },
                     Values = new string[] { "James" },
                     Operator = "=",
-                    ParsedOperator = FilterOperator.Equals,
+                    ParsedOperator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "country!=USA",
                     Properties = new string[] { "country" },
                     Values = new string[] { "USA" },
                     Operator = "!=",
-                    ParsedOperator = FilterOperator.DoesNotEqual,
+                    ParsedOperator = FilterQueryOperator.DoesNotEqual,
                     IsOperatorNegated = true
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "age>20",
                     Properties = new string[] { "age" },
                     Values = new string[] { "20" },
                     Operator = ">",
-                    ParsedOperator = FilterOperator.GreaterThan,
+                    ParsedOperator = FilterQueryOperator.GreaterThan,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = $"birthday<12/2/1994",
                     Properties = new string[] { "birthday" },
                     Values = new string[] { "12/2/1994" },
                     Operator = "<",
-                    ParsedOperator = FilterOperator.LessThan,
+                    ParsedOperator = FilterQueryOperator.LessThan,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "likes>=20",
                     Properties = new string[] { "likes" },
                     Values = new string[] { "20" },
                     Operator = ">=",
-                    ParsedOperator = FilterOperator.GreaterThanOrEqual,
+                    ParsedOperator = FilterQueryOperator.GreaterThanOrEqual,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "posts<=10",
                     Properties = new string[] { "posts" },
                     Values = new string[] { "10" },
                     Operator = "<=",
-                    ParsedOperator = FilterOperator.LessThanOrEqual,
+                    ParsedOperator = FilterQueryOperator.LessThanOrEqual,
                     IsOperatorNegated = false
                 },
 
                 //some wonky ones with multiple operators
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "x=!>=!==y",
                     Properties = new string[] { "x" },
                     Values = new string[] { "!>=!==y" },
                     Operator = "=",
-                    ParsedOperator = FilterOperator.Equals,
+                    ParsedOperator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "i=<=>=!==<>j",
                     Properties = new string[] { "i" },
                     Values = new string[] { "<=>=!==<>j" },
                     Operator = "=",
-                    ParsedOperator = FilterOperator.Equals,
+                    ParsedOperator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
 
                 //some ones with pipe delimited properties and values
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "age|posts>20",
                     Properties = new string[] { "age", "posts"},
                     Values = new string[] { "20"},
                     Operator = ">",
-                    ParsedOperator = FilterOperator.GreaterThan,
+                    ParsedOperator = FilterQueryOperator.GreaterThan,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "name=Amy|Joe",
                     Properties = new string[] { "name" },
                     Values = new string[] { "Amy", "Joe"},
                     Operator = "=",
-                    ParsedOperator = FilterOperator.Equals,
+                    ParsedOperator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "age|posts!=13|45",
                     Properties = new string[] { "age", "posts" },
                     Values = new string[] { "13", "45" },
                     Operator = "!=",
-                    ParsedOperator = FilterOperator.DoesNotEqual,
+                    ParsedOperator = FilterQueryOperator.DoesNotEqual,
                     IsOperatorNegated = true
                 },
 
                 //and some with escaped pipes and commas in the value
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = @"text=hello\, world!",
                     Properties = new string[] { "text" },
                     Values = new string[] { "hello, world!" },
                     Operator = "=",
-                    ParsedOperator = FilterOperator.Equals,
+                    ParsedOperator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = @"text=i\|hate\|regex",
                     Properties = new string[] { "text" },
                     Values = new string[] { "i|hate|regex" },
                     Operator = "=",
-                    ParsedOperator = FilterOperator.Equals,
+                    ParsedOperator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
-                new FilterNode
+                new FilterQueryNode
                 {
                     RawNode = "name|city!=Jane Doe|Pawnee",
                     Properties = new string[] { "name", "city" },
                     Values = new string[] { "Jane Doe", "Pawnee" },
                     Operator = "!=",
-                    ParsedOperator = FilterOperator.DoesNotEqual,
+                    ParsedOperator = FilterQueryOperator.DoesNotEqual,
                     IsOperatorNegated = true
                 }
             };

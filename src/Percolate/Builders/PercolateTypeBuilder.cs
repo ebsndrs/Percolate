@@ -20,9 +20,31 @@ namespace Percolate.Builders
 
         internal IPercolateTypeModel Model { get; set; }
 
-        public PercolateTypeBuilder<TType> AllowPaging(bool allowPaging = true)
+        public PercolateTypeBuilder<TType> EnablePaging(bool enablePaging = true)
         {
-            Model.IsPageable = allowPaging;
+            Model.IsPagingEnabled = enablePaging;
+            return this;
+        }
+
+        public PercolateTypeBuilder<TType> HasMaxPageSize(int maxPageSize)
+        {
+            if (maxPageSize < 1)
+            {
+                throw new ArgumentException();
+            }
+
+            Model.MaximumPageSize = maxPageSize;
+            return this;
+        }
+
+        public PercolateTypeBuilder<TType> HasDefaultPageSize(int defaultPageSize)
+        {
+            if (defaultPageSize < 1)
+            {
+                throw new ArgumentException();
+            }
+
+            Model.DefaultPageSize = defaultPageSize;
             return this;
         }
 
@@ -44,8 +66,8 @@ namespace Percolate.Builders
 
             /*
              * TODO:
-             * Right now, this method and its related methods and constructors only traverse down level of the 'type graph.'
-             * Eventually, we'd like to support an level so that one can pass in (x => x.Foo.Bar).Whatever() and it will resolve properly.
+             * Right now, this method and its related methods and constructors only traverse down one level of the 'type graph.'
+             * Eventually, we'd like to support any level so that one can pass in (x => x.Foo.Bar).Whatever() and it will resolve properly.
              * For now, we need to ensure that the expression that was passed in can resolve for TType. It will be a runtime error.
              * Maybe there is a way to resolve this in the propertyExpression?
              * 

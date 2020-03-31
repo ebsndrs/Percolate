@@ -2,8 +2,14 @@
 
 namespace Percolate.Models.Filtering
 {
-    public class FilterNode
+    public class FilterQueryNode
     {
+        public FilterQueryNode()
+        {
+            Properties = new List<string>();
+            Values = new List<string>();
+        }
+
         public string RawNode { get; set; }
 
         public IEnumerable<string> Properties { get; set; }
@@ -12,7 +18,7 @@ namespace Percolate.Models.Filtering
 
         public string Operator { get; set; }
 
-        public FilterOperator ParsedOperator { get; set; }
+        public FilterQueryOperator ParsedOperator { get; set; }
 
         public bool IsOperatorNegated { get; set; }
     }

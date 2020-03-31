@@ -1,9 +1,9 @@
 ﻿namespace Percolate.Models.Sorting
 {
-    public class SortNode
+    public class SortQueryNode
     {
         public string PropertyName { get; set; }
 
-        public SortDirection Direction { get; set; }
+        public SortQueryDirection Direction { get; set; }
     }
 }

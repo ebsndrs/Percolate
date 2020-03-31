@@ -42,9 +42,9 @@ namespace PercolateTests.UnitTests.ParserTests
             {
                 var item = sortArray[i];
                 var resultToCompare = result.Nodes.ElementAt(i);
-                var directionToCompare = item.StartsWith('-') ? SortDirection.Descending : SortDirection.Ascending;
+                var directionToCompare = item.StartsWith('-') ? SortQueryDirection.Descending : SortQueryDirection.Ascending;
 
-                if (directionToCompare == SortDirection.Ascending)
+                if (directionToCompare == SortQueryDirection.Ascending)
                 {
                     Assert.Equal(item, resultToCompare.PropertyName);
                 }

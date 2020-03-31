@@ -1,6 +1,6 @@
 ﻿namespace Percolate.Models.Sorting
 {
-    public enum SortDirection
+    public enum SortQueryDirection
     {
         Ascending,
         Descending

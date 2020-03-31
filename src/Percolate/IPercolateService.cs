@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Percolate.Attributes;
 using Percolate.Models;
+using System.Linq;
 
 namespace Percolate
 {
@@ -9,10 +11,10 @@ namespace Percolate
 
         public TPercolateModel Model { get; set; }
 
-        public QueryModel BuildQueryModel(IQueryCollection queryCollection);
+        public QueryModel BuildQuery(IQueryCollection queryCollection);
 
-        public void ValidateQueryModel(QueryModel queryModel, PercolateModel percolateModel);
+        public void ValidateQuery(IQueryable queryObject, QueryModel queryModel, EnablePercolateAttribute attribute);
 
-        public void ApplyModel(QueryModel queryModel);//, IQueryable? IEnumerable?);
+        public IQueryable ApplyQuery(IQueryable queryObject, QueryModel queryModel);
     }
 }

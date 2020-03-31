@@ -1,8 +1,10 @@
-﻿namespace Percolate.Models
+﻿using System.Linq;
+
+namespace Percolate.Models
 {
-    public class PercolateResponse<T> where T : class
+    public class PercolateResponse
     {
-        public T Value { get; set; }
+        public IQueryable Value { get; set; }
 
         public QueryModel Metadata { get; set; }
     }

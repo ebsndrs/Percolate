@@ -9,9 +9,9 @@ namespace Percolate.Parsers
 {
     public static class SortParser
     {
-        public static SortModel ParseSortParameter(IQueryCollection queryCollection)
+        public static SortQueryModel ParseSortParameter(IQueryCollection queryCollection)
         {
-            var sortModel = new SortModel();
+            var sortModel = new SortQueryModel();
 
             if (queryCollection.ContainsKey("sort"))
             {
@@ -22,7 +22,7 @@ namespace Percolate.Parsers
             return sortModel;
         }
 
-        private static SortNode ParseSortParameterNode(string value)
+        private static SortQueryNode ParseSortParameterNode(string value)
         {
             var pattern = @"^[-]?\w+$";
 
@@ -30,25 +30,23 @@ namespace Percolate.Parsers
             {
                 if (value.StartsWith('-'))
                 {
-                    return new SortNode
+                    return new SortQueryNode
                     {
-                        PropertyName = value.Replace("-", string.Empty),
-                        Direction = SortDirection.Descending
+                        PropertyName = value.Remove(0, 1),
+                        Direction = SortQueryDirection.Descending
                     };
                 }
                 else
                 {
-                    return new SortNode
+                    return new SortQueryNode
                     {
                         PropertyName = value,
-                        Direction = SortDirection.Ascending
+                        Direction = SortQueryDirection.Ascending
                     };
                 }
             }
             else
-            {
-                throw new ParameterParsingException();
-            }
+                throw new ParameterParsingException($"The sort query parameter \"{value}\" is not in a valid format.");
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Percolate.Models.Paging
 {
-    public class PageModel
+    public class PageQueryModel
     {
-        public PageModel()
+        public PageQueryModel()
         {
             Page = null;
             PageSize = null;

@@ -8,8 +8,6 @@ namespace Percolate.Builders
         public PercolatePropertyBuilder(PropertyInfo propertyInfo)
         {
             Model = new PercolatePropertyModel(propertyInfo);
-
-
         }
 
         public PercolatePropertyBuilder(PercolatePropertyModel model)
@@ -19,15 +17,15 @@ namespace Percolate.Builders
 
         internal PercolatePropertyModel Model { get; set; }
      
-        public PercolatePropertyBuilder<TProperty> AllowSorting(bool allowSorting = true)
+        public PercolatePropertyBuilder<TProperty> EnableSorting(bool enableSorting = true)
         {
-            Model.IsSortable = allowSorting;
+            Model.IsSortingEnabled = enableSorting;
             return this;
         }
 
-        public PercolatePropertyBuilder<TProperty> AllowFiltering(bool allowFiltering = true)
+        public PercolatePropertyBuilder<TProperty> EnableFiltering(bool enableFiltering = true)
         {
-            Model.IsFilterable = allowFiltering;
+            Model.IsFilteringEnabled = enableFiltering;
             return this;
         }
     }

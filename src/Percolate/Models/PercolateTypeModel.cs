@@ -15,13 +15,19 @@ namespace Percolate.Models
                 .ToList();
 
             Type = typeof(TType);
-            IsPageable = true;
+            IsPagingEnabled = null;
+            DefaultPageSize = null;
+            MaximumPageSize = null;
         }
 
-        public List<PercolatePropertyModel> Properties { get; set; }
+        public ICollection<PercolatePropertyModel> Properties { get; set; }
 
         public Type Type { get; set; }
 
-        public bool IsPageable { get; set; }
+        public bool? IsPagingEnabled { get; set; }
+
+        public int? DefaultPageSize { get; set; }
+
+        public int? MaximumPageSize { get; set; }
     }
 }

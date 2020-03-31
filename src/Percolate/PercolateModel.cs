@@ -11,9 +11,7 @@ namespace Percolate
             Types = new List<IPercolateTypeModel>();
 
             if (ModelBuilder == null)
-            {
                 ModelBuilder = new PercolateModelBuilder();
-            }
 
             Configure(ModelBuilder);
 
@@ -25,13 +23,9 @@ namespace Percolate
             Types = new List<IPercolateTypeModel>();
 
             if (modelBuilder == null && ModelBuilder == null)
-            {
                 ModelBuilder = new PercolateModelBuilder();
-            }
             else
-            {
                 ModelBuilder = modelBuilder;
-            }
         }
 
         public PercolateModelBuilder ModelBuilder { get; set; }
