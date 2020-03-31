@@ -1,9 +1,8 @@
 ﻿using Percolate.Attributes;
+using Percolate.Exceptions;
 using Percolate.Validation.Paging;
 using System;
 using System.Linq;
-using Percolate.Models;
-using Percolate.Exceptions;
 
 namespace Percolate.Validation
 {
@@ -21,29 +20,8 @@ namespace Percolate.Validation
 
             return new ValidationRules
             {
-                PageValidationRules = BuildPageValidationRules(typeModel, options, attribute)
+                PageValidationRules = PageValidator.BuildPageValidationRules(typeModel, options, attribute)
             };
-        }
-
-        private static PageValidationRules BuildPageValidationRules(IPercolateTypeModel typeModel, PercolateOptions options, EnablePercolateAttribute attribute)
-        {
-            var pageValidationRules = new PageValidationRules
-            {
-                IsPagingAllowed = attribute.PagingSetting switch
-                {
-                    PercolateAttributeSetting.Enabled => true,
-                    PercolateAttributeSetting.Disabled => false,
-                    _ => typeModel.IsPagingEnabled ?? options.IsPagingEnabled,
-                },
-
-                MaxPageSize = attribute.MaximumPageSize switch
-                {
-                    0 => typeModel.MaximumPageSize ?? options.MaximumPageSize,
-                    _ => attribute.MaximumPageSize
-                }
-            };
-
-            return pageValidationRules;
         }
     }
 }

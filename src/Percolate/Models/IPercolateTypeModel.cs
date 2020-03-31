@@ -11,6 +11,10 @@ namespace Percolate.Models
 
         public bool? IsPagingEnabled { get; set; }
 
+        public bool? IsSortingEnabled { get; set; }
+
+        public bool? IsFilteringEnabled { get; set; }
+
         public int? DefaultPageSize { get; set; }
 
         public int? MaximumPageSize { get; set; }

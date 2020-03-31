@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
 using Percolate.Parsers;
-using System;
 using System.Collections.Generic;
 using Xunit;
 

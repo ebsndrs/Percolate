@@ -20,9 +20,21 @@ namespace Percolate.Builders
 
         internal IPercolateTypeModel Model { get; set; }
 
-        public PercolateTypeBuilder<TType> EnablePaging(bool enablePaging = true)
+        public PercolateTypeBuilder<TType> HasPaging(bool hasPaging = true)
         {
-            Model.IsPagingEnabled = enablePaging;
+            Model.IsPagingEnabled = hasPaging;
+            return this;
+        }
+
+        public PercolateTypeBuilder<TType> HasSorting(bool hasSorting = true)
+        {
+            Model.IsSortingEnabled = hasSorting;
+            return this;
+        }
+
+        public PercolateTypeBuilder<TType> HasFiltering(bool hasFiltering = true)
+        {
+            Model.IsFilteringEnabled = hasFiltering;
             return this;
         }
 

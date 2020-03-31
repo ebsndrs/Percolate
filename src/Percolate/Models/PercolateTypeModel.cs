@@ -16,6 +16,8 @@ namespace Percolate.Models
 
             Type = typeof(TType);
             IsPagingEnabled = null;
+            IsSortingEnabled = null;
+            IsFilteringEnabled = null;
             DefaultPageSize = null;
             MaximumPageSize = null;
         }
@@ -25,6 +27,10 @@ namespace Percolate.Models
         public Type Type { get; set; }
 
         public bool? IsPagingEnabled { get; set; }
+
+        public bool? IsSortingEnabled { get; set; }
+
+        public bool? IsFilteringEnabled { get; set; }
 
         public int? DefaultPageSize { get; set; }
 

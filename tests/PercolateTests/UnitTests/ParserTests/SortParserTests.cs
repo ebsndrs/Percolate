@@ -3,7 +3,6 @@ using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
 using Percolate.Models.Sorting;
 using Percolate.Parsers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -60,6 +59,7 @@ namespace PercolateTests.UnitTests.ParserTests
                 { "sort", "foo,-bar,>=spam" }
             });
 
+            //have to enumerate the result to actually throw the exception
             Assert.Throws<ParameterParsingException>(() => SortParser.ParseSortParameter(queryCollection).Nodes.ToList());
         }
     }

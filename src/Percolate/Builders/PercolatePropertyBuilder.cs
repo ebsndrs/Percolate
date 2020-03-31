@@ -17,15 +17,15 @@ namespace Percolate.Builders
 
         internal PercolatePropertyModel Model { get; set; }
      
-        public PercolatePropertyBuilder<TProperty> EnableSorting(bool enableSorting = true)
+        public PercolatePropertyBuilder<TProperty> AllowsSorting(bool allowsSorting = true)
         {
-            Model.IsSortingEnabled = enableSorting;
+            Model.IsSortingEnabled = allowsSorting;
             return this;
         }
 
-        public PercolatePropertyBuilder<TProperty> EnableFiltering(bool enableFiltering = true)
+        public PercolatePropertyBuilder<TProperty> AllowsFiltering(bool allowsFiltering = true)
         {
-            Model.IsFilteringEnabled = enableFiltering;
+            Model.IsFilteringEnabled = allowsFiltering;
             return this;
         }
     }

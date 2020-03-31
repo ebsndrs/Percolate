@@ -3,11 +3,8 @@ using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
 using Percolate.Models.Filtering;
 using Percolate.Parsers;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace PercolateTests.UnitTests.ParserTests
@@ -175,7 +172,7 @@ namespace PercolateTests.UnitTests.ParserTests
             var result = FilterParser.ParseFilterQuery(queryCollection);
 
             var resultNodes = result.Nodes.ToList();
-            
+
             Assert.All(resultNodes, (node) =>
             {
                 //for any given node, the index of expected results and the parsed results should match
