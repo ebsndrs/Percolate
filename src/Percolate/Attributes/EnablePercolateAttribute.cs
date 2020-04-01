@@ -1,5 +1,4 @@
-﻿using Percolate.Models;
-using System;
+﻿using System;
 
 namespace Percolate.Attributes
 {
