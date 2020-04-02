@@ -7,25 +7,25 @@ namespace Percolate.Builders
     {
         public PercolatePropertyBuilder(PropertyInfo propertyInfo)
         {
-            Model = new PercolatePropertyModel(propertyInfo);
+            Model = new PercolateProperty(propertyInfo);
         }
 
-        public PercolatePropertyBuilder(PercolatePropertyModel model)
+        public PercolatePropertyBuilder(PercolateProperty model)
         {
             Model = model;
         }
 
-        internal PercolatePropertyModel Model { get; set; }
-     
-        public PercolatePropertyBuilder<TProperty> AllowsSorting(bool allowsSorting = true)
+        public PercolateProperty Model { get; set; }
+
+        public PercolatePropertyBuilder<TProperty> CanSort(bool canSort = true)
         {
-            Model.IsSortingEnabled = allowsSorting;
+            Model.IsSortingAllowed = canSort;
             return this;
         }
 
-        public PercolatePropertyBuilder<TProperty> AllowsFiltering(bool allowsFiltering = true)
+        public PercolatePropertyBuilder<TProperty> CanFilter(bool canFilter = true)
         {
-            Model.IsFilteringEnabled = allowsFiltering;
+            Model.IsFilteringAllowed = canFilter;
             return this;
         }
     }

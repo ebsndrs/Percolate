@@ -10,42 +10,31 @@ namespace Percolate.Builders
     {
         public PercolateTypeBuilder()
         {
-            Model = new PercolateTypeModel<TType>();
+            Model = new PercolateType<TType>();
         }
 
-        public PercolateTypeBuilder(IPercolateTypeModel model)
+        public PercolateTypeBuilder(IPercolateType model)
         {
             Model = model;
         }
 
-        internal IPercolateTypeModel Model { get; set; }
+        public IPercolateType Model { get; set; }
 
-        public PercolateTypeBuilder<TType> HasPaging(bool hasPaging = true)
+        public PercolateTypeBuilder<TType> CanPage(bool canPage = true)
         {
-            Model.IsPagingEnabled = hasPaging;
+            Model.IsPagingEnabled = canPage;
             return this;
         }
 
-        public PercolateTypeBuilder<TType> HasSorting(bool hasSorting = true)
+        public PercolateTypeBuilder<TType> CanSort(bool canSort = true)
         {
-            Model.IsSortingEnabled = hasSorting;
+            Model.IsSortingEnabled = canSort;
             return this;
         }
 
-        public PercolateTypeBuilder<TType> HasFiltering(bool hasFiltering = true)
+        public PercolateTypeBuilder<TType> CanFilter(bool canFilter = true)
         {
-            Model.IsFilteringEnabled = hasFiltering;
-            return this;
-        }
-
-        public PercolateTypeBuilder<TType> HasMaxPageSize(int maxPageSize)
-        {
-            if (maxPageSize < 1)
-            {
-                throw new ArgumentException();
-            }
-
-            Model.MaximumPageSize = maxPageSize;
+            Model.IsFilteringEnabled = canFilter;
             return this;
         }
 
@@ -57,6 +46,17 @@ namespace Percolate.Builders
             }
 
             Model.DefaultPageSize = defaultPageSize;
+            return this;
+        }
+
+        public PercolateTypeBuilder<TType> HasMaxPageSize(int maxPageSize)
+        {
+            if (maxPageSize < 1)
+            {
+                throw new ArgumentException("MaxPageSize cannot be less than 1.");
+            }
+
+            Model.MaximumPageSize = maxPageSize;
             return this;
         }
 

@@ -1,15 +1,15 @@
-﻿using Percolate.Models.Filtering;
-using Percolate.Models.Paging;
-using Percolate.Models.Sorting;
+﻿using Percolate.Filtering;
+using Percolate.Paging;
+using Percolate.Sorting;
 
 namespace Percolate.Models
 {
     public class QueryModel
     {
-        public PageQueryModel PageQueryModel { get; set; }
+        public PageQuery PageQueryModel { get; set; }
 
-        public SortQueryModel SortQueryModel { get; set; }
+        public SortQuery SortQueryModel { get; set; }
 
-        public FilterQueryModel FilterQueryModel { get; set; }
+        public FilterQuery FilterQueryModel { get; set; }
     }
 }

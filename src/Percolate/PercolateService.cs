@@ -1,18 +1,25 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Percolate.Attributes;
-using Percolate.Exceptions;
+using Percolate.Filtering;
 using Percolate.Models;
-using Percolate.Models.Paging;
-using Percolate.Parsers;
-using Percolate.Validation;
-using Percolate.Validation.Paging;
+using Percolate.Paging;
+using Percolate.Sorting;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 
 namespace Percolate
 {
     public class PercolateService<TPercolateModal> : IPercolateService<TPercolateModal> where TPercolateModal : PercolateModel
     {
+        private EnablePercolateAttribute attribute;
+        private IQueryable<dynamic> queryable;
+        private IPercolateType type;
+
         public PercolateService(TPercolateModal model, IOptions<PercolateOptions> options)
         {
             Model = model;
@@ -23,54 +30,109 @@ namespace Percolate
 
         public PercolateOptions Options { get; set; }
 
-        public QueryModel BuildQuery(IQueryCollection queryCollection)
+        public IActionResult Process(ActionExecutedContext context)
         {
-            return new QueryModel
+            if (!(context.Result is OkObjectResult result))
             {
-                PageQueryModel = PageParser.ParsePagingParameters(queryCollection),
-                SortQueryModel = SortParser.ParseSortParameter(queryCollection),
-                FilterQueryModel = FilterParser.ParseFilterQuery(queryCollection)
-            };
-        }
-
-        public void ValidateQuery(IQueryable queryObject, QueryModel queryModel, EnablePercolateAttribute attribute)
-        {
-            var genericTypeArgument = queryObject.GetType().GetGenericArguments().First();
-
-            if (!Model.Types.Any(t => t.Type == genericTypeArgument))
-            {
-                throw new TypeNotSupportedException($"The type {genericTypeArgument.Name} is not a part of the {Model.GetType().Name} configuration. Add it to enable Percolate for the type.");
+                return context.Result;
             }
 
-            var validationRules = ValidationHelper.BuildValidationRules(genericTypeArgument, Options, Model, attribute);
-
-            PageValidator.ValidatePageParameters(queryModel.PageQueryModel, validationRules.PageValidationRules);
-
-            //validate sort
-
-            //validate filter
-        }
-
-        public IQueryable ApplyQuery(IQueryable queryObject, QueryModel queryModel)
-        {
-            var genericQueryObject = queryObject as IQueryable<dynamic>;
-
-            return ApplyPaging(genericQueryObject, queryModel.PageQueryModel);
-        }
-
-        private IQueryable<dynamic> ApplyPaging(IQueryable<dynamic> query, PageQueryModel queryModel)
-        {
-            var skip = queryModel.Page.Value == 1 ? 0 : queryModel.Page.Value * queryModel.PageSize.Value;
-            var take = queryModel.PageSize.Value;
-
-            if (skip > 0)
+            if (!ShouldPercolateProcess(context.ActionDescriptor))
             {
-                query = query.Skip(skip);
+                return context.Result;
             }
 
-            query = query.Take(take);
+            if (!IsCollectionResult(result))
+            {
+                return context.Result;
+            }
 
-            return query;
+            queryable = GetResultValueAsQueryable(result);
+            attribute = GetEnablePercolateAttribute(context.ActionDescriptor);
+            type = GetPercolateTypeFromQueryable(queryable);
+
+            if (FilterHelper.IsFilteringEnabled(attribute, type, Options))
+            {
+                var filterQuery = FilterHelper.GetFilterQuery(context);
+                FilterHelper.ValidateFilterQuery(filterQuery, type);
+                queryable = FilterHelper.ApplyFilterQuery(queryable, filterQuery);
+            }
+
+            if (SortHelper.IsSortingEnabled(attribute, type, Options))
+            {
+                var sortQuery = SortHelper.GetSortQuery(context);
+                SortHelper.ValidateSortQuery(sortQuery, type);
+                queryable = SortHelper.ApplySortQuery(queryable, sortQuery);
+            }
+
+            if (PageHelper.IsPagingEnabled(attribute, type, Options))
+            {
+                var pageQuery = PageHelper.GetPageQuery(context, attribute, type, Options);
+                PageHelper.ValidatePageQuery(pageQuery, attribute, type, Options);
+                queryable = PageHelper.ApplyPageQuery(queryable, pageQuery);
+            }
+
+            return new OkObjectResult(queryable);
+        }
+
+        private bool ShouldPercolateProcess(ActionDescriptor actionDescriptor)
+        {
+            var isEnablePercolateOnController = AttributeHelper.GetAttributeFromController<EnablePercolateAttribute>(actionDescriptor) != null;
+            var isDisablePercolateOnController = AttributeHelper.GetAttributeFromController<DisablePercolateAttribute>(actionDescriptor) != null;
+            var isEnablePercolateOnAction = AttributeHelper.GetAttributeFromAction<EnablePercolateAttribute>(actionDescriptor) != null;
+            var isDisablePercolateOnAction = AttributeHelper.GetAttributeFromAction<DisablePercolateAttribute>(actionDescriptor) != null;
+
+            return (isEnablePercolateOnAction ||
+                (isEnablePercolateOnController && !isDisablePercolateOnAction) ||
+                (Options.IsPercolateEnabledGlobally && !isDisablePercolateOnController && !isDisablePercolateOnAction));
+        }
+
+        private EnablePercolateAttribute GetEnablePercolateAttribute(ActionDescriptor actionDescriptor)
+        {
+            var actionAttribute = AttributeHelper.GetAttributeFromAction<EnablePercolateAttribute>(actionDescriptor);
+
+            if (actionAttribute != null)
+            {
+                return actionAttribute;
+            }
+
+            var controllerAttribute = AttributeHelper.GetAttributeFromController<EnablePercolateAttribute>(actionDescriptor);
+
+            if (controllerAttribute != null)
+            {
+                return controllerAttribute;
+            }
+
+            return null;
+        }
+
+        private bool IsCollectionResult(OkObjectResult result)
+        {
+            return result.Value is IEnumerable || result.Value is IQueryable;
+        }
+
+        private IPercolateType GetPercolateTypeFromQueryable(IQueryable queryable)
+        {
+            var genericType = queryable
+                .GetType()
+                .GetGenericArguments()
+                .Single();
+
+            return Model.Types
+                .FirstOrDefault(type => type.Type == genericType);
+        }
+
+        private IQueryable<dynamic> GetResultValueAsQueryable(OkObjectResult result)
+        {
+            if (result.Value is IQueryable<dynamic>)
+            {
+                return result.Value as IQueryable<dynamic>;
+            }
+            else
+            {
+                return (result.Value as IEnumerable<dynamic>)
+                    .AsQueryable<dynamic>();
+            }
         }
     }
 }

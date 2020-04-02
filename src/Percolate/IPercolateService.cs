@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Percolate.Attributes;
-using Percolate.Models;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Percolate
 {
@@ -11,10 +9,6 @@ namespace Percolate
 
         public TPercolateModel Model { get; set; }
 
-        public QueryModel BuildQuery(IQueryCollection queryCollection);
-
-        public void ValidateQuery(IQueryable queryObject, QueryModel queryModel, EnablePercolateAttribute attribute);
-
-        public IQueryable ApplyQuery(IQueryable queryObject, QueryModel queryModel);
+        public IActionResult Process(ActionExecutedContext context);
     }
 }

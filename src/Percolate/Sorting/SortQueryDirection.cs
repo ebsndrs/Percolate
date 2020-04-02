@@ -1,4 +1,4 @@
-﻿namespace Percolate.Models.Sorting
+﻿namespace Percolate.Sorting
 {
     public enum SortQueryDirection
     {

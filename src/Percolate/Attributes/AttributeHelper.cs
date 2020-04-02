@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace Percolate.Attributes
 {
-    internal static class AttributeHelper
+    public static class AttributeHelper
     {
-        internal static TAttribute GetAttributeFromAction<TAttribute>(ActionDescriptor actionDescriptor) where TAttribute : Attribute
+        public static TAttribute GetAttributeFromAction<TAttribute>(ActionDescriptor actionDescriptor) where TAttribute : Attribute
         {
             TAttribute attribute = null;
 
@@ -23,7 +23,7 @@ namespace Percolate.Attributes
             return attribute;
         }
 
-        internal static TAttribute GetAttributeFromController<TAttribute>(ActionDescriptor actionDescriptor) where TAttribute : Attribute
+        public static TAttribute GetAttributeFromController<TAttribute>(ActionDescriptor actionDescriptor) where TAttribute : Attribute
         {
             TAttribute attribute = null;
 

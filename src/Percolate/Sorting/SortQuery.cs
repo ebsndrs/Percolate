@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Percolate.Models.Sorting
+namespace Percolate.Sorting
 {
-    public class SortQueryModel
+    public class SortQuery
     {
-        public SortQueryModel()
+        public SortQuery()
         {
             Nodes = new List<SortQueryNode>();
         }

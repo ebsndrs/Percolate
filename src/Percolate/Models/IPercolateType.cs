@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Percolate.Models
 {
-    public interface IPercolateTypeModel
+    public interface IPercolateType
     {
-        public ICollection<PercolatePropertyModel> Properties { get; set; }
+        public ICollection<PercolateProperty> Properties { get; set; }
 
         public Type Type { get; set; }
 

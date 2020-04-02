@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
-using Percolate.Models.Filtering;
-using Percolate.Parsers;
+using Percolate.Filtering;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -35,8 +34,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "name=James",
                     Properties = new string[] { "name" },
                     Values = new string[] { "James" },
-                    Operator = "=",
-                    ParsedOperator = FilterQueryOperator.Equals,
+                    RawOperator = "=",
+                    Operator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -44,8 +43,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "country!=USA",
                     Properties = new string[] { "country" },
                     Values = new string[] { "USA" },
-                    Operator = "!=",
-                    ParsedOperator = FilterQueryOperator.DoesNotEqual,
+                    RawOperator = "!=",
+                    Operator = FilterQueryOperator.DoesNotEqual,
                     IsOperatorNegated = true
                 },
                 new FilterQueryNode
@@ -53,8 +52,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "age>20",
                     Properties = new string[] { "age" },
                     Values = new string[] { "20" },
-                    Operator = ">",
-                    ParsedOperator = FilterQueryOperator.GreaterThan,
+                    RawOperator = ">",
+                    Operator = FilterQueryOperator.GreaterThan,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -62,8 +61,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = $"birthday<12/2/1994",
                     Properties = new string[] { "birthday" },
                     Values = new string[] { "12/2/1994" },
-                    Operator = "<",
-                    ParsedOperator = FilterQueryOperator.LessThan,
+                    RawOperator = "<",
+                    Operator = FilterQueryOperator.LessThan,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -71,8 +70,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "likes>=20",
                     Properties = new string[] { "likes" },
                     Values = new string[] { "20" },
-                    Operator = ">=",
-                    ParsedOperator = FilterQueryOperator.GreaterThanOrEqual,
+                    RawOperator = ">=",
+                    Operator = FilterQueryOperator.GreaterThanOrEqual,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -80,8 +79,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "posts<=10",
                     Properties = new string[] { "posts" },
                     Values = new string[] { "10" },
-                    Operator = "<=",
-                    ParsedOperator = FilterQueryOperator.LessThanOrEqual,
+                    RawOperator = "<=",
+                    Operator = FilterQueryOperator.LessThanOrEqual,
                     IsOperatorNegated = false
                 },
 
@@ -91,8 +90,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "x=!>=!==y",
                     Properties = new string[] { "x" },
                     Values = new string[] { "!>=!==y" },
-                    Operator = "=",
-                    ParsedOperator = FilterQueryOperator.Equals,
+                    RawOperator = "=",
+                    Operator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -100,8 +99,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "i=<=>=!==<>j",
                     Properties = new string[] { "i" },
                     Values = new string[] { "<=>=!==<>j" },
-                    Operator = "=",
-                    ParsedOperator = FilterQueryOperator.Equals,
+                    RawOperator = "=",
+                    Operator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
 
@@ -111,8 +110,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "age|posts>20",
                     Properties = new string[] { "age", "posts"},
                     Values = new string[] { "20"},
-                    Operator = ">",
-                    ParsedOperator = FilterQueryOperator.GreaterThan,
+                    RawOperator = ">",
+                    Operator = FilterQueryOperator.GreaterThan,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -120,8 +119,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "name=Amy|Joe",
                     Properties = new string[] { "name" },
                     Values = new string[] { "Amy", "Joe"},
-                    Operator = "=",
-                    ParsedOperator = FilterQueryOperator.Equals,
+                    RawOperator = "=",
+                    Operator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -129,8 +128,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "age|posts!=13|45",
                     Properties = new string[] { "age", "posts" },
                     Values = new string[] { "13", "45" },
-                    Operator = "!=",
-                    ParsedOperator = FilterQueryOperator.DoesNotEqual,
+                    RawOperator = "!=",
+                    Operator = FilterQueryOperator.DoesNotEqual,
                     IsOperatorNegated = true
                 },
 
@@ -140,8 +139,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = @"text=hello\, world!",
                     Properties = new string[] { "text" },
                     Values = new string[] { "hello, world!" },
-                    Operator = "=",
-                    ParsedOperator = FilterQueryOperator.Equals,
+                    RawOperator = "=",
+                    Operator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -149,8 +148,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = @"text=i\|hate\|regex",
                     Properties = new string[] { "text" },
                     Values = new string[] { "i|hate|regex" },
-                    Operator = "=",
-                    ParsedOperator = FilterQueryOperator.Equals,
+                    RawOperator = "=",
+                    Operator = FilterQueryOperator.Equals,
                     IsOperatorNegated = false
                 },
                 new FilterQueryNode
@@ -158,8 +157,8 @@ namespace PercolateTests.UnitTests.ParserTests
                     RawNode = "name|city!=Jane Doe|Pawnee",
                     Properties = new string[] { "name", "city" },
                     Values = new string[] { "Jane Doe", "Pawnee" },
-                    Operator = "!=",
-                    ParsedOperator = FilterQueryOperator.DoesNotEqual,
+                    RawOperator = "!=",
+                    Operator = FilterQueryOperator.DoesNotEqual,
                     IsOperatorNegated = true
                 }
             };
@@ -181,8 +180,8 @@ namespace PercolateTests.UnitTests.ParserTests
                 Assert.Equal(expectedResult.RawNode, node.RawNode);
                 Assert.Equal(expectedResult.Properties, node.Properties);
                 Assert.Equal(expectedResult.Values, node.Values);
+                Assert.Equal(expectedResult.RawOperator, node.RawOperator);
                 Assert.Equal(expectedResult.Operator, node.Operator);
-                Assert.Equal(expectedResult.ParsedOperator, node.ParsedOperator);
                 Assert.Equal(expectedResult.IsOperatorNegated, node.IsOperatorNegated);
             });
         }

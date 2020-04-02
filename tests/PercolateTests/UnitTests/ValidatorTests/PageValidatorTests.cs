@@ -1,6 +1,5 @@
 ﻿using Percolate.Exceptions;
-using Percolate.Models.Paging;
-using Percolate.Validation.Paging;
+using Percolate.Paging;
 using Xunit;
 
 namespace PercolateTests.UnitTests.ValidatorTests
@@ -10,7 +9,7 @@ namespace PercolateTests.UnitTests.ValidatorTests
         [Fact]
         public void ValidatePageParameters_WhenCalledWithValidParameters_DoesNotThrowException()
         {
-            var query = new PageQueryModel
+            var query = new PageQuery
             {
                 Page = 1,
                 PageSize = 100
@@ -18,17 +17,16 @@ namespace PercolateTests.UnitTests.ValidatorTests
 
             var rules = new PageValidationRules
             {
-                IsPagingEnabled = true,
                 MaximumPageSize = 100
             };
 
-            PageValidator.ValidatePageParameters(query, rules);
+            PageValidator.ValidatePageQuery(query, rules);
         }
 
         [Fact]
         public void ValidatePageParameters_WhenCalledWithPagingDisabled_ThrowsException()
         {
-            var query = new PageQueryModel
+            var query = new PageQuery
             {
                 Page = 1,
                 PageSize = 100
@@ -36,17 +34,16 @@ namespace PercolateTests.UnitTests.ValidatorTests
 
             var rules = new PageValidationRules
             {
-                IsPagingEnabled = false,
                 MaximumPageSize = 100
             };
 
-            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageParameters(query, rules));
+            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageQuery(query, rules));
         }
 
         [Fact]
         public void ValidatePageParameters_WhenCalledWithOutOfUpperBoundsPageSize_ThrowsException()
         {
-            var query = new PageQueryModel
+            var query = new PageQuery
             {
                 Page = 1,
                 PageSize = 101
@@ -54,17 +51,16 @@ namespace PercolateTests.UnitTests.ValidatorTests
 
             var rules = new PageValidationRules
             {
-                IsPagingEnabled = true,
                 MaximumPageSize = 100
             };
 
-            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageParameters(query, rules));
+            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageQuery(query, rules));
         }
 
         [Fact]
         public void ValidatePageParameters_WhenCalledWithOutOfLowerBoundsPage_ThrowsException()
         {
-            var query = new PageQueryModel
+            var query = new PageQuery
             {
                 Page = 0,
                 PageSize = 100
@@ -72,17 +68,16 @@ namespace PercolateTests.UnitTests.ValidatorTests
 
             var rules = new PageValidationRules
             {
-                IsPagingEnabled = true,
                 MaximumPageSize = 100
             };
 
-            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageParameters(query, rules));
+            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageQuery(query, rules));
         }
 
         [Fact]
         public void ValidatePageParameters_WhenCalledWithOutOfLowerBoundsPageSize_ThrowsException()
         {
-            var query = new PageQueryModel
+            var query = new PageQuery
             {
                 Page = 1,
                 PageSize = 0
@@ -90,11 +85,10 @@ namespace PercolateTests.UnitTests.ValidatorTests
 
             var rules = new PageValidationRules
             {
-                IsPagingEnabled = true,
                 MaximumPageSize = 100
             };
 
-            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageParameters(query, rules));
+            Assert.Throws<ParameterValidationException>(() => PageValidator.ValidatePageQuery(query, rules));
         }
     }
 }

@@ -9,13 +9,14 @@ namespace Percolate.Builders
             Model = new PercolateModel(this);
         }
 
-        internal PercolateModel Model { get; set; }
+        public PercolateModel Model { get; set; }
 
         public PercolateTypeBuilder<TType> Type<TType>() where TType : class
         {
             PercolateTypeBuilder<TType> typeBuilder;
 
-            var existingTypeModel = Model.Types.FirstOrDefault(t => t.Type is TType);
+            var existingTypeModel = Model.Types
+                .FirstOrDefault(t => t.Type is TType);
 
             if (existingTypeModel == null)
             {

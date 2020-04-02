@@ -7,7 +7,11 @@ namespace Percolate
     {
         public static IServiceCollection AddPercolate<TPercolateModel>(this IServiceCollection services) where TPercolateModel : PercolateModel
         {
-            static void options(PercolateOptions options) => new PercolateOptions();
+            static void options(PercolateOptions options)
+            {
+                new PercolateOptions();
+            }
+
             return services.BuildPercolateService<TPercolateModel>(options);
         }
 

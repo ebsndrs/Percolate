@@ -1,4 +1,4 @@
-﻿namespace Percolate.Models.Filtering
+﻿namespace Percolate.Filtering
 {
     public enum FilterQueryOperator
     {

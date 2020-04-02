@@ -8,10 +8,12 @@ namespace Percolate
     {
         public PercolateModel()
         {
-            Types = new List<IPercolateTypeModel>();
+            Types = new List<IPercolateType>();
 
             if (ModelBuilder == null)
+            {
                 ModelBuilder = new PercolateModelBuilder();
+            }
 
             Configure(ModelBuilder);
 
@@ -20,17 +22,21 @@ namespace Percolate
 
         public PercolateModel(PercolateModelBuilder modelBuilder)
         {
-            Types = new List<IPercolateTypeModel>();
+            Types = new List<IPercolateType>();
 
             if (modelBuilder == null && ModelBuilder == null)
+            {
                 ModelBuilder = new PercolateModelBuilder();
+            }
             else
+            {
                 ModelBuilder = modelBuilder;
+            }
         }
 
         public PercolateModelBuilder ModelBuilder { get; set; }
 
-        public List<IPercolateTypeModel> Types { get; set; }
+        public List<IPercolateType> Types { get; set; }
 
         public virtual void Configure(PercolateModelBuilder modelBuilder) { }
     }

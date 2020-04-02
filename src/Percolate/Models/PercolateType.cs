@@ -1,17 +1,16 @@
-﻿using Percolate.Builders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Percolate.Models
 {
-    public class PercolateTypeModel<TType> : IPercolateTypeModel where TType : class
+    public class PercolateType<TType> : IPercolateType where TType : class
     {
-        public PercolateTypeModel()
+        public PercolateType()
         {
             Properties = typeof(TType)
                 .GetProperties()
-                .Select(p => new PercolatePropertyModel(p))
+                .Select(p => new PercolateProperty(p))
                 .ToList();
 
             Type = typeof(TType);
@@ -22,7 +21,7 @@ namespace Percolate.Models
             MaximumPageSize = null;
         }
 
-        public ICollection<PercolatePropertyModel> Properties { get; set; }
+        public ICollection<PercolateProperty> Properties { get; set; }
 
         public Type Type { get; set; }
 

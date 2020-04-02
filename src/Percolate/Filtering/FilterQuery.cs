@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Percolate.Models.Filtering
+namespace Percolate.Filtering
 {
-    public class FilterQueryModel
+    public class FilterQuery
     {
-        public FilterQueryModel()
+        public FilterQuery()
         {
             Nodes = new List<FilterQueryNode>();
         }

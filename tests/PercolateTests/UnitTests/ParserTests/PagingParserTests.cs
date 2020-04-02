@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
-using Percolate.Parsers;
+using Percolate.Paging;
 using System.Collections.Generic;
 using Xunit;
 
@@ -10,14 +10,14 @@ namespace PercolateTests.UnitTests.ParserTests
     public class PagingParserTests
     {
         [Fact]
-        public void ParsePagingParameters_WhenCalledWithNoQueryParameters_ReturnsNullValues()
+        public void ParsePagingParameters_WhenCalledWithNoQueryParameters_ReturnsDefaultValues()
         {
             var queryCollection = new QueryCollection();
 
-            var result = PageParser.ParsePagingParameters(queryCollection);
+            var result = PageParser.ParsePageQuery(queryCollection, 1, 100);
 
-            Assert.Null(result.Page);
-            Assert.Null(result.PageSize);
+            Assert.Equal(1, result.Page);
+            Assert.Equal(100, result.PageSize);
         }
 
         [Fact]
@@ -27,7 +27,7 @@ namespace PercolateTests.UnitTests.ParserTests
             var queryCollection1 = new QueryCollection(new Dictionary<string, StringValues>()
             {
                 { "page", "foo" },
-                { "pageSize", "10" }
+                { "pageSize", "100" }
             });
 
             //non-int pageSize
@@ -37,8 +37,8 @@ namespace PercolateTests.UnitTests.ParserTests
                 { "pageSize", "bar" }
             });
 
-            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection1));
-            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection2));
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePageQuery(queryCollection1, 1, 100));
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePageQuery(queryCollection2, 1, 100));
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace PercolateTests.UnitTests.ParserTests
                 { "pageSize", pageSize.ToString() }
             });
 
-            var result = PageParser.ParsePagingParameters(queryCollection);
+            var result = PageParser.ParsePageQuery(queryCollection, 1, 100);
 
             Assert.Equal(page, result.Page);
             Assert.Equal(pageSize, result.PageSize);
@@ -76,8 +76,8 @@ namespace PercolateTests.UnitTests.ParserTests
                 { "pageSize", int.MaxValue.ToString() + "1" }
             });
 
-            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection1));
-            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePagingParameters(queryCollection2));
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePageQuery(queryCollection1, 1, 100));
+            Assert.Throws<ParameterParsingException>(() => PageParser.ParsePageQuery(queryCollection2, 1, 100));
         }
     }
 }

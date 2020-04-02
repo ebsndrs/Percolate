@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
-using Percolate.Models.Sorting;
-using Percolate.Parsers;
+using Percolate.Sorting;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -16,7 +15,7 @@ namespace PercolateTests.UnitTests.ParserTests
         {
             var queryCollection = new QueryCollection();
 
-            var result = SortParser.ParseSortParameter(queryCollection);
+            var result = SortParser.ParseSortQuery(queryCollection);
 
             Assert.Empty(result.Nodes);
         }
@@ -33,7 +32,7 @@ namespace PercolateTests.UnitTests.ParserTests
                 { "sort", sortString }
             });
 
-            var result = SortParser.ParseSortParameter(queryCollection);
+            var result = SortParser.ParseSortQuery(queryCollection);
 
             var resultNodes = result.Nodes.ToList();
 
@@ -43,9 +42,13 @@ namespace PercolateTests.UnitTests.ParserTests
                 var directionToCompare = itemToCompareAgainst.StartsWith('-') ? SortQueryDirection.Descending : SortQueryDirection.Ascending;
 
                 if (directionToCompare == SortQueryDirection.Ascending)
-                    Assert.Equal(itemToCompareAgainst, node.PropertyName);
+                {
+                    Assert.Equal(itemToCompareAgainst, node.Name);
+                }
                 else
-                    Assert.Equal(itemToCompareAgainst.Remove(0, 1), node.PropertyName);
+                {
+                    Assert.Equal(itemToCompareAgainst.Remove(0, 1), node.Name);
+                }
 
                 Assert.Equal(directionToCompare, node.Direction);
             });
@@ -60,7 +63,7 @@ namespace PercolateTests.UnitTests.ParserTests
             });
 
             //have to enumerate the result to actually throw the exception
-            Assert.Throws<ParameterParsingException>(() => SortParser.ParseSortParameter(queryCollection).Nodes.ToList());
+            Assert.Throws<ParameterParsingException>(() => SortParser.ParseSortQuery(queryCollection).Nodes.ToList());
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿namespace Percolate.Validation.Paging
+﻿namespace Percolate.Paging
 {
     public class PageValidationRules
     {
-        public bool IsPagingEnabled { get; set; }
-
         public int MaximumPageSize { get; set; }
     }
 }

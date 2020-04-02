@@ -10,7 +10,7 @@
             IsPagingEnabled = true;
             IsSortingEnabled = true;
             IsFilteringEnabled = true;
-            DefaultPageSize = 10;
+            DefaultPageSize = 100;
             MaximumPageSize = 1000;
         }
 
