@@ -6,15 +6,17 @@ namespace Percolate.Filtering
     {
         public FilterQueryNode()
         {
-            Properties = new List<string>();
+            Properties = new List<FilterQueryNodeProperty>();
             Values = new List<string>();
         }
 
-        public IEnumerable<string> Properties { get; set; }
+        public string RawNode { get; set; }
+
+        public IEnumerable<FilterQueryNodeProperty> Properties { get; set; }
 
         public IEnumerable<string> Values { get; set; }
 
-        public FilterQueryOperator Operator { get; set; }
+        public FilterQueryNodeOperator Operator { get; set; }
 
         public bool IsOperatorNegated { get; set; }
     }

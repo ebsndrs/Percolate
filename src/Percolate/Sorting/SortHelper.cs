@@ -38,7 +38,7 @@ namespace Percolate.Sorting
             }
         }
 
-        public static IQueryable<dynamic> ApplySortQuery(IQueryable<dynamic> queryable, SortQuery query)
+        public static IQueryable<T> ApplySortQuery<T>(IQueryable<T> queryable, SortQuery query)
         {
             if (query.Nodes.Any())
             {

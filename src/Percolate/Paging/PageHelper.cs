@@ -74,12 +74,14 @@ namespace Percolate.Paging
             PageValidator.ValidatePageQuery(query, rules);
         }
 
-        public static IQueryable<dynamic> ApplyPageQuery(IQueryable<dynamic> queryable, PageQuery query)
+        public static IQueryable<T> ApplyPageQuery<T>(IQueryable<T> queryable, PageQuery query)
         {
             var skip = query.Page == 1 ? 0 : query.Page * (query.PageSize - 1);
             var take = query.PageSize;
 
-            return queryable.Skip(skip).Take(take);
+            return queryable
+                .Skip(skip)
+                .Take(take);
         }
     }
 }

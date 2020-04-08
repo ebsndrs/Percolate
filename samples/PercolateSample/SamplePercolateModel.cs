@@ -9,8 +9,6 @@ namespace PercolateSample
         public override void Configure(PercolateModelBuilder modelBuilder)
         {
             modelBuilder.Type<Person>();
-
-            modelBuilder.Type<Place>();
         }
     }
 }

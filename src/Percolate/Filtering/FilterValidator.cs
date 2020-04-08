@@ -28,7 +28,7 @@ namespace Percolate.Filtering
                     .Select(property => property.Name);
 
                 var propertiesThatAreNotOnType = node.Properties
-                    .Where(np => !typePropertyNames.Contains(np, StringComparer.InvariantCultureIgnoreCase));
+                    .Where(np => !typePropertyNames.Contains(np.Name, StringComparer.InvariantCultureIgnoreCase));
 
                 if (propertiesThatAreNotOnType.Any())
                 {
@@ -40,16 +40,16 @@ namespace Percolate.Filtering
                     .Select(property => property.Name);
 
                 var propertiesThatAreNotAllowedToFilterOn = node.Properties
-                    .Where(np => disallowedPropertyNames.Contains(np, StringComparer.InvariantCultureIgnoreCase));
+                    .Where(np => disallowedPropertyNames.Contains(np.Name, StringComparer.InvariantCultureIgnoreCase));
 
                 if (propertiesThatAreNotAllowedToFilterOn.Any())
                 {
                     throw new ParameterValidationException();
                 }
 
-                //ensure that all piped properties share the same underlying type
+                //ensure that all included properties share the same underlying type
                 var propertyTypes = type.Properties
-                    .Where(p => node.Properties.Contains(p.Name, StringComparer.InvariantCultureIgnoreCase))
+                    .Where(p => node.Properties.Select(node => node.Name).Contains(p.Name, StringComparer.InvariantCultureIgnoreCase))
                     .Select(p => p.Type)
                     .Distinct();
 

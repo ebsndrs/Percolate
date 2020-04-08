@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Percolate;
+using PercolateSample.Data;
 
 namespace PercolateSample
 {
@@ -19,7 +20,8 @@ namespace PercolateSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllers();
+            services.AddDbContext<SampleDbContext>();
             services.AddPercolate<SamplePercolateModel>();
         }
 
