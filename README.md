@@ -6,8 +6,8 @@ Percolate is a lightweight library for paging, filtering, and sorting your API r
 
 - [Installation](#Installation)
 - [Configuration](#Configuration)
-- [API Usage](#API%20Usage)
-- [Client Usage](#Client%20Usage)
+- [API Usage](#API-Usage)
+- [Client Usage](#Client-Usage)
   - [Paging](#Paging)
   - [Sorting](#Sorting)
   - [Filtering](#Filtering)
