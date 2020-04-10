@@ -7,21 +7,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Percolate.Filtering
 {
     public static class FilterHelper
     {
-        private static readonly Dictionary<FilterQueryNodeOperator,Func<Expression, Expression, Expression>> expressions = new Dictionary<FilterQueryNodeOperator, Func<Expression, Expression, Expression>>()
-        {
-            { FilterQueryNodeOperator.IsEqual, (member, constant) => Expression.Equal(member, constant) },
-            { FilterQueryNodeOperator.IsNotEqual, (member, constant) => Expression.NotEqual(member, constant) },
-            { FilterQueryNodeOperator.IsGreaterThanOrEqual, (member, constant) => Expression.GreaterThanOrEqual(member, constant) },
-            { FilterQueryNodeOperator.IsLessThanOrEqual, (member, constant) => Expression.LessThanOrEqual(member, constant) },
-            { FilterQueryNodeOperator.IsGreaterThan, (member, constant) => Expression.GreaterThan(member, constant) },
-            { FilterQueryNodeOperator.IsLessThan, (member, constant) => Expression.LessThan(member, constant) }
-        };
-
         public static bool IsFilteringEnabled(EnablePercolateAttribute attribute, IPercolateType type, PercolateOptions options)
         {
             if (attribute != default && attribute.FilterSetting != PercolateAttributeSetting.Unset)
@@ -38,22 +29,43 @@ namespace Percolate.Filtering
             }
         }
 
-        public static FilterQuery GetFilterQuery(ActionExecutedContext context)
+        public static FilterQuery ParseFilterQuery(ActionExecutedContext context)
         {
             return FilterParser.ParseFilterQuery(context.HttpContext.Request.Query);
         }
 
         public static void ValidateFilterQuery(FilterQuery query, IPercolateType type)
         {
-            if (query.Nodes.Any())
-            {
-                var rules = FilterValidator.GetFilterQueryValidationRules(type);
-                FilterValidator.ValidateFilterQuery(query, type, rules);
-            }
+            FilterValidator.ValidateFilterQuery(query, type, FilterValidator.GetFilterQueryValidationRules(type));
         }
 
         public static IQueryable<T> ApplyFilterQuery<T>(IQueryable<T> queryable, FilterQuery query)
         {
+            var expressions = new Dictionary<FilterQueryNodeOperator, Func<Expression, Expression, Expression>>()
+            {
+                { FilterQueryNodeOperator.IsEqual, (member, constant) => Expression.Equal(member, constant) },
+                { FilterQueryNodeOperator.CaseInsensitiveIsEqual, (member, constant) => Expression.Call(StringEquals(), member, constant, CaseInsensitiveExpression()) },
+                { FilterQueryNodeOperator.IsNotEqual, (member, constant) => Expression.NotEqual(member, constant) },
+                { FilterQueryNodeOperator.CaseInsensitiveIsNotEqual, (member, constant) => Expression.Not(Expression.Call(StringEquals(), member, constant, CaseInsensitiveExpression())) },
+                { FilterQueryNodeOperator.IsGreaterThanOrEqual, (member, constant) => Expression.GreaterThanOrEqual(member, constant) },
+                { FilterQueryNodeOperator.IsLessThanOrEqual, (member, constant) => Expression.LessThanOrEqual(member, constant) },
+                { FilterQueryNodeOperator.IsGreaterThan, (member, constant) => Expression.GreaterThan(member, constant) },
+                { FilterQueryNodeOperator.IsLessThan, (member, constant) => Expression.LessThan(member, constant) },
+                { FilterQueryNodeOperator.DoesContain, (member, constant) => Expression.Call(member, StringContains(), constant, CaseSensitiveExpression()) },
+                { FilterQueryNodeOperator.CaseInsensitiveDoesContain, (member, constant) => Expression.Call(member, StringContains(), constant, CaseInsensitiveExpression()) },
+                { FilterQueryNodeOperator.DoesNotContain, (member, constant) => Expression.Not(Expression.Call(member, StringContains(), constant, CaseSensitiveExpression())) },
+                { FilterQueryNodeOperator.CaseInsensitiveDoesNotContain, (member, constant) => Expression.Not(Expression.Call(member, StringContains(), constant, CaseInsensitiveExpression())) },
+                { FilterQueryNodeOperator.DoesStartWith, (member, constant) => Expression.Call(member, StringStartsWith(), constant, CaseSensitiveExpression()) },
+                { FilterQueryNodeOperator.CaseInsensitiveDoesStartWith, (member, constant) => Expression.Call(member, StringStartsWith(), constant, CaseInsensitiveExpression()) },
+                { FilterQueryNodeOperator.DoesNotStartWith, (member, constant) => Expression.Not(Expression.Call(member, StringStartsWith(), constant, CaseSensitiveExpression())) },
+                { FilterQueryNodeOperator.CaseInsensitiveDoesNotStartWith, (member, constant) => Expression.Not(Expression.Call(member, StringStartsWith(), constant, CaseInsensitiveExpression())) },
+                { FilterQueryNodeOperator.DoesEndWith, (member, constant) => Expression.Call(member, StringEndsWith(), constant, CaseSensitiveExpression()) },
+                { FilterQueryNodeOperator.CaseInsensitiveDoesEndWith, (member, constant) => Expression.Call(member, StringEndsWith(), constant, CaseInsensitiveExpression()) },
+                { FilterQueryNodeOperator.DoesNotEndWith, (member, constant) => Expression.Not(Expression.Call(member, StringEndsWith(), constant, CaseSensitiveExpression())) },
+                { FilterQueryNodeOperator.CaseInsensitiveDoesNotEndWith, (member, constant) => Expression.Not(Expression.Call(member, StringEndsWith(), constant, CaseInsensitiveExpression())) }
+
+            };
+
             //short circuit the return if there are no nodes
             if (!query.Nodes.Any())
             {
@@ -77,7 +89,13 @@ namespace Percolate.Filtering
                     Expression propertyExpression = Expression.Empty();
 
                     //define the member expression here so that we can reuse it in the loop below
-                    Expression memberExpression = Expression.Property(parameterExpression, property.Name);
+                    Expression memberExpression = parameterExpression;
+
+                    //support for nested properties
+                    foreach (var member in property.Name.Split('.'))
+                    {
+                        memberExpression = Expression.Property(memberExpression, member);
+                    }
 
                     foreach (var (value, valueIndex) in node.Values.WithIndex())
                     {
@@ -141,5 +159,21 @@ namespace Percolate.Filtering
 
             return typeConverter.ConvertFromString(text);
         }
+
+        private static Expression CaseSensitiveExpression() => Expression.Constant(StringComparison.InvariantCulture);
+
+        private static Expression CaseInsensitiveExpression() => Expression.Constant(StringComparison.InvariantCultureIgnoreCase);
+
+        private static MethodInfo StringEquals() => typeof(string)
+            .GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(string), typeof(StringComparison) });
+
+        private static MethodInfo StringContains() => typeof(string)
+            .GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
+
+        private static MethodInfo StringStartsWith() => typeof(string)
+            .GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) });
+
+        private static MethodInfo StringEndsWith() => typeof(string)
+            .GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) });
     }
 }

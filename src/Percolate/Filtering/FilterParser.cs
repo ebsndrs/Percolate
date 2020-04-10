@@ -18,31 +18,30 @@ namespace Percolate.Filtering
         //this enables filters with commas and pipes in them while still allowing
         //multiple filters and logical OR operations
         private const string escapedCommaPattern = @"(?<!($|[^\\])(\\\\)*?\\),";
-        private const string escapedPipePattern = @"(?<!($|[^\\])(\\\\)*?\\)\|";
         private static readonly Dictionary<string, FilterQueryNodeOperator> nodeOperators = new Dictionary<string, FilterQueryNodeOperator>()
         {
             //commented out operators are not supported yet
 
             { " eq ", FilterQueryNodeOperator.IsEqual },
-            //{ " ieq ", FilterQueryNodeOperator.CaseInsensitiveIsEqual },
+            { " ieq ", FilterQueryNodeOperator.CaseInsensitiveIsEqual },
             { " ne ", FilterQueryNodeOperator.IsNotEqual },
-            //{ " ine ", FilterQueryNodeOperator.CaseInsensitiveIsNotEqual },
+            { " ine ", FilterQueryNodeOperator.CaseInsensitiveIsNotEqual },
             { " gt ", FilterQueryNodeOperator.IsGreaterThan },
             { " ge ", FilterQueryNodeOperator.IsGreaterThanOrEqual },
             { " lt ", FilterQueryNodeOperator.IsLessThan },
             { " le ", FilterQueryNodeOperator.IsLessThanOrEqual },
-            //{ " c ", FilterQueryNodeOperator.DoesContain },
-            ////{ " ic ", FilterQueryNodeOperator.CaseInsensitiveDoesContain },
-            //{ " nc ", FilterQueryNodeOperator.DoesNotContain },
-            //{ " inc ", FilterQueryNodeOperator.CaseInsensitiveDoesNotContain },
-            //{ " sw ", FilterQueryNodeOperator.DoesStartWith },
-            //{ " isw ", FilterQueryNodeOperator.CaseInsensitiveDoesStartWith },
-            //{ " nsw ", FilterQueryNodeOperator.DoesNotStartWith },
-            //{ " insw ", FilterQueryNodeOperator.CaseInsensitiveDoesNotStartWith },
-            //{ " ew ", FilterQueryNodeOperator.DoesEndWith },
-            //{ " iew ", FilterQueryNodeOperator.CaseInsensitiveDoesEndWith },
-            //{ " new ", FilterQueryNodeOperator.DoesNotEndWith },
-            //{ " inew ", FilterQueryNodeOperator.CaseInsensitiveDoesNotEndWith }
+            { " c ", FilterQueryNodeOperator.DoesContain },
+            { " ic ", FilterQueryNodeOperator.CaseInsensitiveDoesContain },
+            { " nc ", FilterQueryNodeOperator.DoesNotContain },
+            { " inc ", FilterQueryNodeOperator.CaseInsensitiveDoesNotContain },
+            { " sw ", FilterQueryNodeOperator.DoesStartWith },
+            { " isw ", FilterQueryNodeOperator.CaseInsensitiveDoesStartWith },
+            { " nsw ", FilterQueryNodeOperator.DoesNotStartWith },
+            { " insw ", FilterQueryNodeOperator.CaseInsensitiveDoesNotStartWith },
+            { " ew ", FilterQueryNodeOperator.DoesEndWith },
+            { " iew ", FilterQueryNodeOperator.CaseInsensitiveDoesEndWith },
+            { " new ", FilterQueryNodeOperator.DoesNotEndWith },
+            { " inew ", FilterQueryNodeOperator.CaseInsensitiveDoesNotEndWith }
         };
 
         private static readonly Dictionary<string, FilterQueryClauseOperator> clauseOperators = new Dictionary<string, FilterQueryClauseOperator>()
