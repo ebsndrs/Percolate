@@ -71,8 +71,8 @@ namespace Percolate
 
             if (FilterHelper.IsFilteringEnabled(attribute, type, Options))
             {
-                var filterQuery = FilterHelper.GetFilterQuery(context);
-                FilterHelper.ValidateFilterQuery(filterQuery, type);
+                var filterQuery = FilterHelper.ParseFilterQuery(context);
+                //FilterHelper.ValidateFilterQuery(filterQuery, type);
 
                 queryable = typeof(FilterHelper)
                     .GetMethod(nameof(FilterHelper.ApplyFilterQuery), bindingFlags)
@@ -82,7 +82,7 @@ namespace Percolate
 
             if (SortHelper.IsSortingEnabled(attribute, type, Options))
             {
-                var sortQuery = SortHelper.GetSortQuery(context);
+                var sortQuery = SortHelper.ParseSortQuery(context);
                 SortHelper.ValidateSortQuery(sortQuery, type);
 
                 queryable = typeof(SortHelper)

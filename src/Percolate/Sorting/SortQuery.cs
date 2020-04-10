@@ -6,7 +6,7 @@ namespace Percolate.Sorting
     {
         public SortQuery()
         {
-            Nodes = new List<SortQueryNode>();
+            Nodes = new HashSet<SortQueryNode>();
         }
 
         public IEnumerable<SortQueryNode> Nodes { get; set; }

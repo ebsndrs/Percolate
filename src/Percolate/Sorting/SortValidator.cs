@@ -9,12 +9,10 @@ namespace Percolate.Sorting
     {
         public static SortValidationRules GetSortQueryValidationRules(IPercolateType type)
         {
-            var disallowedProperties = type.Properties
-                .Where(property => property.IsSortingAllowed.HasValue && property.IsFilteringAllowed == false);
-
             return new SortValidationRules
             {
-                DisallowedProperties = disallowedProperties
+                DisallowedProperties = type.Properties
+                    .Where(property => property.IsSortingAllowed.HasValue && property.IsFilteringAllowed == false)
             };
         }
 
@@ -24,30 +22,28 @@ namespace Percolate.Sorting
             {
                 //ensure that the parsed property name in the node exists in the type configuration
                 var isPropertyOnType = type.Properties
-                    .Select(property => property.Name)
-                    .Contains(node.Name, StringComparer.InvariantCultureIgnoreCase);
+                    .Any(property => string.Equals(property.Name, node.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (!isPropertyOnType)
                 {
                     throw new ParameterValidationException();
                 }
 
-                //ensure that the parsed property on the node is allowed to sort on by property level configuration
+                //ensure that the parsed property on the node is not on the list of disallowed properties to sort on
                 var isPropertyDisallowed = rules.DisallowedProperties
-                    .Select(property => property.Name)
-                    .Contains(node.Name, StringComparer.InvariantCultureIgnoreCase);
+                    .Any(property => string.Equals(property.Name, node.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (isPropertyDisallowed)
                 {
                     throw new ParameterValidationException();
                 }
 
-                //ensure that the type of the property is comparable (otherwise dynamic LINQ can't sort it)
-                var typeToCheck = type.Properties
+                //ensure that the type of the property is IComparable (otherwise we can't sort it)
+                var propertyType = type.Properties
                     .Single(property => string.Equals(property.Name, node.Name, StringComparison.InvariantCultureIgnoreCase))
                     .Type;
 
-                if (!typeof(IComparable).IsAssignableFrom(typeToCheck))
+                if (!typeof(IComparable).IsAssignableFrom(propertyType))
                 {
                     throw new ParameterValidationException();
                 }

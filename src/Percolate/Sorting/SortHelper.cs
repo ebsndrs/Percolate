@@ -24,34 +24,27 @@ namespace Percolate.Sorting
             }
         }
 
-        public static SortQuery GetSortQuery(ActionExecutedContext context)
+        public static SortQuery ParseSortQuery(ActionExecutedContext context)
         {
             return SortParser.ParseSortQuery(context.HttpContext.Request.Query);
         }
 
         public static void ValidateSortQuery(SortQuery query, IPercolateType type)
         {
-            if (query.Nodes.Any())
-            {
-                var rules = SortValidator.GetSortQueryValidationRules(type);
-                SortValidator.ValidateSortQuery(query, type, rules);
-            }
+            SortValidator.ValidateSortQuery(query, type, SortValidator.GetSortQueryValidationRules(type));
         }
 
         public static IQueryable<T> ApplySortQuery<T>(IQueryable<T> queryable, SortQuery query)
         {
             if (query.Nodes.Any())
             {
-                //convert nodes into a format dynamic LINQ understands: 'property1 ASC, property2 DESC, etc'
-                var sortStrings = query.Nodes
-                    .Select(node => $"{node.Name} {(node.Direction == SortQueryDirection.Ascending ? "ASC" : "DESC")}");
-
-                var sortString = string.Join(',', sortStrings);
-
-                queryable = queryable.OrderBy(sortString);
+                return queryable
+                    .OrderBy(string.Join(',', query.Nodes.Select(node => $"{node.Name} {(node.Direction == SortQueryDirection.Ascending ? "asc" : "desc")}")));
             }
-
-            return queryable;
+            else
+            {
+                return queryable;
+            }
         }
     }
 }

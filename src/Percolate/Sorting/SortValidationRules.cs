@@ -7,7 +7,7 @@ namespace Percolate.Sorting
     {
         public SortValidationRules()
         {
-            DisallowedProperties = new List<PercolateProperty>();
+            DisallowedProperties = new HashSet<PercolateProperty>();
         }
 
         public IEnumerable<PercolateProperty> DisallowedProperties { get; set; }

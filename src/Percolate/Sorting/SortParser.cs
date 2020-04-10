@@ -2,7 +2,6 @@
 using Percolate.Exceptions;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Percolate.Sorting
 {
@@ -10,46 +9,43 @@ namespace Percolate.Sorting
     {
         public static SortQuery ParseSortQuery(IQueryCollection queryCollection)
         {
-            var query = new SortQuery();
-
             if (queryCollection.ContainsKey("sort"))
             {
-                query.Nodes = queryCollection["sort"]
+                return new SortQuery
+                {
+                    Nodes = queryCollection["sort"]
                     .ToString()
                     .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(queryString => ParseSortQueryNode(queryString));
+                    .Select(queryString => ParseSortQueryNode(queryString))
+                };
             }
-
-            return query;
+            else
+            {
+                return new SortQuery();
+            }
         }
 
         private static SortQueryNode ParseSortQueryNode(string query)
         {
-            var pattern = @"^[-]?\w+$";
+            var splitQuery = query
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(segment => segment.Trim().ToLower());
 
-            if (Regex.IsMatch(query, pattern))
+            if (splitQuery.Count() != 2)
             {
-                if (query.StartsWith('-'))
-                {
-                    return new SortQueryNode
-                    {
-                        Name = query.Remove(0, 1),
-                        Direction = SortQueryDirection.Descending
-                    };
-                }
-                else
-                {
-                    return new SortQueryNode
-                    {
-                        Name = query,
-                        Direction = SortQueryDirection.Ascending
-                    };
-                }
+                throw new ParameterParsingException();
             }
-            else
+
+            return new SortQueryNode
             {
-                throw new ParameterParsingException($"The sort query parameter \"{query}\" is not in a valid format.");
-            }
+                Name = splitQuery.ElementAt(0),
+                Direction = splitQuery.ElementAt(1) switch
+                {
+                    "asc" => SortQueryDirection.Ascending,
+                    "desc" => SortQueryDirection.Descending,
+                    _ => throw new ParameterParsingException()
+                }
+            };
         }
     }
 }
