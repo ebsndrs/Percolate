@@ -1,4 +1,5 @@
 ﻿using Percolate.Exceptions;
+using Percolate.Extensions;
 using Percolate.Models;
 using System;
 using System.Linq;
@@ -18,11 +19,20 @@ namespace Percolate.Sorting
 
         public static void ValidateSortQuery(SortQuery query, IPercolateType type, SortValidationRules rules)
         {
+            if (query == null)
+            {
+                return;
+            }
+
             foreach (var node in query.Nodes)
             {
+                var splitName = node.Name
+                    .Split('.')
+                    .Select(segment => segment.Trim());
+
                 //ensure that the parsed property name in the node exists in the type configuration
                 var isPropertyOnType = type.Properties
-                    .Any(property => string.Equals(property.Name, node.Name, StringComparison.InvariantCultureIgnoreCase));
+                    .Any(property => string.Equals(property.Name, splitName.ElementAt(0), StringComparison.InvariantCultureIgnoreCase));
 
                 if (!isPropertyOnType)
                 {
@@ -31,7 +41,7 @@ namespace Percolate.Sorting
 
                 //ensure that the parsed property on the node is not on the list of disallowed properties to sort on
                 var isPropertyDisallowed = rules.DisallowedProperties
-                    .Any(property => string.Equals(property.Name, node.Name, StringComparison.InvariantCultureIgnoreCase));
+                    .Any(property => string.Equals(property.Name, splitName.ElementAt(0), StringComparison.InvariantCultureIgnoreCase));
 
                 if (isPropertyDisallowed)
                 {
@@ -39,14 +49,14 @@ namespace Percolate.Sorting
                 }
 
                 //ensure that the type of the property is IComparable (otherwise we can't sort it)
-                var propertyType = type.Properties
-                    .Single(property => string.Equals(property.Name, node.Name, StringComparison.InvariantCultureIgnoreCase))
-                    .Type;
+                //var propertyType = type.Properties
+                //    .Single(property => string.Equals(property.Name, splitName.ElementAt(0), StringComparison.InvariantCultureIgnoreCase))
+                //    .Type;
 
-                if (!typeof(IComparable).IsAssignableFrom(propertyType))
-                {
-                    throw new ParameterValidationException();
-                }
+                //if (!typeof(IComparable).IsAssignableFrom(propertyType))
+                //{
+                //    throw new ParameterValidationException();
+                //}
             }
         }
     }

@@ -82,11 +82,11 @@ namespace Percolate.Builders
              * Eventually, we'd like to support any level so that one can pass in (x => x.Foo.Bar).Whatever() and it will resolve properly.
              * For now, we need to ensure that the expression that was passed in can resolve for TType. It will be a runtime error.
              * Maybe there is a way to resolve this in the propertyExpression?
-             * 
+             *
              * The consequence of this is that any property of a type that does not implement ICompareable cannot be sorted and any property that isn't a value type
              * cannot be filtered on. So this is a really important thing to implement. One can imagine when they might want to be able to sort on x.Foo.Bar.
              * Reflection can be used to find that property and call SetValue on it, but configuring the model here for it is harder.
-             * 
+             *
              * GetProperties with the correct binding flags can get us some of the way there, but there are certain classes (DateTime is one) that will cause a stack overflow.
              * So I'm not sure if there's a way to control for those certain cases that might blow it up. Maybe: get the properties, check if a stack overflow might occur by
              * seeing if any of the retreived properties share a type with the type you retrieved the properties for, and only add subproperties if that check returns false?

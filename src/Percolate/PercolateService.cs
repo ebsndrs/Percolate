@@ -16,19 +16,19 @@ using System.Reflection;
 
 namespace Percolate
 {
-    public class PercolateService<TPercolateModal> : IPercolateService<TPercolateModal> where TPercolateModal : PercolateModel
+    public class PercolateService : IPercolateService
     {
-        public PercolateService(TPercolateModal model, IOptions<PercolateOptions> options)
+        public PercolateService(PercolateModel model, IOptions<PercolateOptions> options)
         {
             Model = model;
             Options = options.Value;
         }
 
-        public TPercolateModal Model { get; set; }
+        public PercolateModel Model { get; set; }
 
         public PercolateOptions Options { get; set; }
 
-        public IActionResult Process(ActionExecutedContext context)
+        public IActionResult ApplyQuery(ActionExecutedContext context)
         {
             if (!(context.Result is OkObjectResult result))
             {
@@ -47,7 +47,7 @@ namespace Percolate
 
             //At runtime, we don't know the Type of the object that Percolate is processing.
             //The individual processing methods are written as generic methods because they are more maintainable
-            //We must discover the Type and invoke those generic methods.
+            //We must discover the Type and invoke the generic method.
 
             Type genericType = GetResultValueAsIQueryable(result)
                 .GetType()
@@ -59,50 +59,47 @@ namespace Percolate
                 .MakeGenericMethod(genericType)
                 .Invoke(this, new[] { result });
 
+            try
+            {
+                 return new OkObjectResult(GetType()
+                    .GetMethod(nameof(ApplyQuery), BindingFlags.NonPublic | BindingFlags.Instance)
+                    .MakeGenericMethod(genericType)
+                    .Invoke(this, new[] { context, queryable }));
+            }
+            catch (TargetInvocationException exception)
+            {
+                throw exception.InnerException;
+            }
+        }
+
+        private IQueryable<T> ApplyQuery<T>(ActionExecutedContext context, IQueryable<T> queryable)
+        {
             var attribute = GetEnablePercolateAttribute(context.ActionDescriptor);
-
-            var type = GetType()
-                .GetMethod(nameof(GetPercolateType), BindingFlags.NonPublic | BindingFlags.Instance)
-                .MakeGenericMethod(genericType)
-                .Invoke(this, null) as IPercolateType;
-
-            //this is used as the binding flags on the GetMethod calls that find the appropriate apply method
-            var bindingFlags = BindingFlags.Public | BindingFlags.Static;
+            var type = Model.GetType<T>();
+            var queryCollection = context.HttpContext.Request.Query.ToDictionary(q => q.Key, q => q.Value);
 
             if (FilterHelper.IsFilteringEnabled(attribute, type, Options))
             {
-                var filterQuery = FilterHelper.ParseFilterQuery(context);
+                var filterQuery = FilterHelper.ParseFilterQuery(queryCollection);
                 //FilterHelper.ValidateFilterQuery(filterQuery, type);
-
-                queryable = typeof(FilterHelper)
-                    .GetMethod(nameof(FilterHelper.ApplyFilterQuery), bindingFlags)
-                    .MakeGenericMethod(genericType)
-                    .Invoke(this, new[] { queryable, filterQuery });
+                queryable = FilterHelper.ApplyFilterQuery(queryable, filterQuery);
             }
 
             if (SortHelper.IsSortingEnabled(attribute, type, Options))
             {
-                var sortQuery = SortHelper.ParseSortQuery(context);
+                var sortQuery = SortHelper.ParseSortQuery(queryCollection);
                 SortHelper.ValidateSortQuery(sortQuery, type);
-
-                queryable = typeof(SortHelper)
-                    .GetMethod(nameof(SortHelper.ApplySortQuery), bindingFlags)
-                    .MakeGenericMethod(genericType)
-                    .Invoke(this, new[] { queryable, sortQuery });
+                queryable = SortHelper.ApplySortQuery(queryable, sortQuery);
             }
 
             if (PageHelper.IsPagingEnabled(attribute, type, Options))
             {
-                var pageQuery = PageHelper.GetPageQuery(context, attribute, type, Options);
+                var pageQuery = PageHelper.ParsePageQuery(queryCollection);
                 PageHelper.ValidatePageQuery(pageQuery, attribute, type, Options);
-
-                queryable = typeof(PageHelper)
-                    .GetMethod(nameof(PageHelper.ApplyPageQuery), bindingFlags)
-                    .MakeGenericMethod(genericType)
-                    .Invoke(this, new[] { queryable, pageQuery });
+                queryable = PageHelper.ApplyPageQuery(queryable, pageQuery, attribute, type, Options);
             }
 
-            return new OkObjectResult(queryable);
+            return queryable;
         }
 
         private bool ShouldPercolateProcess(ActionDescriptor actionDescriptor)
@@ -160,20 +157,14 @@ namespace Percolate
             {
                 return null;
             }
-
-            IQueryable value;
-
-            if (result.Value is IQueryable)
+            else if (result.Value is IQueryable)
             {
-                value = result.Value as IQueryable;
+                return result.Value as IQueryable;
             }
             else
             {
-                value = (result.Value as IEnumerable).AsQueryable();
+                return (result.Value as IEnumerable).AsQueryable();
             }
-
-            return value;
-
         }
 
         private IQueryable<T> GetResultValueAsGenericIQueryable<T>(OkObjectResult result)

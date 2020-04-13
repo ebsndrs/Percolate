@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.Extensions.Primitives;
 using Percolate.Attributes;
 using Percolate.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 
@@ -24,9 +25,9 @@ namespace Percolate.Sorting
             }
         }
 
-        public static SortQuery ParseSortQuery(ActionExecutedContext context)
+        public static SortQuery ParseSortQuery(Dictionary<string, StringValues> queryCollection)
         {
-            return SortParser.ParseSortQuery(context.HttpContext.Request.Query);
+            return SortParser.ParseSortQuery(queryCollection);
         }
 
         public static void ValidateSortQuery(SortQuery query, IPercolateType type)
@@ -36,7 +37,7 @@ namespace Percolate.Sorting
 
         public static IQueryable<T> ApplySortQuery<T>(IQueryable<T> queryable, SortQuery query)
         {
-            if (query.Nodes.Any())
+            if (query != null && query.Nodes.Any())
             {
                 return queryable
                     .OrderBy(string.Join(',', query.Nodes.Select(node => $"{node.Name} {(node.Direction == SortQueryDirection.Ascending ? "asc" : "desc")}")));

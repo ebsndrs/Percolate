@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
 using System;
+using System.Collections.Generic;
 
 namespace Percolate.Paging
 {
     public static class PageParser
     {
-        public static PageQuery ParsePageQuery(IQueryCollection queryCollection, int defaultPage, int defaultPageSize)
+        public static PageQuery ParsePageQuery(Dictionary<string, StringValues> queryCollection)
         {
             var query = new PageQuery();
 
@@ -14,18 +15,10 @@ namespace Percolate.Paging
             {
                 query.Page = ParseSingleInt(queryCollection["page"].ToString(), "page");
             }
-            else
-            {
-                query.Page = defaultPage;
-            }
 
             if (queryCollection.ContainsKey("pageSize"))
             {
                 query.PageSize = ParseSingleInt(queryCollection["pageSize"].ToString(), "pageSize");
-            }
-            else
-            {
-                query.PageSize = defaultPageSize;
             }
 
             return query;

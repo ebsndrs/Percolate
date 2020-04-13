@@ -13,7 +13,7 @@ namespace PercolateTests.UnitTests.ParserTests
         [Fact]
         public void ParseSortParameters_WhenCalledWithNoQueryParameter_ReturnsDefaultValues()
         {
-            var queryCollection = new QueryCollection();
+            var queryCollection = new Dictionary<string, StringValues>();
 
             var result = SortParser.ParseSortQuery(queryCollection);
 
@@ -27,10 +27,10 @@ namespace PercolateTests.UnitTests.ParserTests
 
             var sortList = sortString.Split(',').ToList();
 
-            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>()
+            var queryCollection = new Dictionary<string, StringValues>()
             {
                 { "sort", sortString }
-            });
+            };
 
             var result = SortParser.ParseSortQuery(queryCollection);
 
@@ -57,10 +57,10 @@ namespace PercolateTests.UnitTests.ParserTests
         [Fact]
         public void ParseSortParameters_WhenCalledWithInvalidQueryParameter_ThrowsException()
         {
-            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>()
+            var queryCollection = new Dictionary<string, StringValues>()
             {
                 { "sort", "foo,-bar,>=spam" }
-            });
+            };
 
             //have to enumerate the result to actually throw the exception
             Assert.Throws<ParameterParsingException>(() => SortParser.ParseSortQuery(queryCollection).Nodes.ToList());

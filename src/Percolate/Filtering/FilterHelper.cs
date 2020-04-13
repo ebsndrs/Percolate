@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.Extensions.Primitives;
 using Percolate.Attributes;
 using Percolate.Extensions;
 using Percolate.Models;
@@ -29,9 +29,9 @@ namespace Percolate.Filtering
             }
         }
 
-        public static FilterQuery ParseFilterQuery(ActionExecutedContext context)
+        public static FilterQuery ParseFilterQuery(Dictionary<string, StringValues> queryCollection)
         {
-            return FilterParser.ParseFilterQuery(context.HttpContext.Request.Query);
+            return FilterParser.ParseFilterQuery(queryCollection);
         }
 
         public static void ValidateFilterQuery(FilterQuery query, IPercolateType type)
@@ -67,7 +67,7 @@ namespace Percolate.Filtering
             };
 
             //short circuit the return if there are no nodes
-            if (!query.Nodes.Any())
+            if (query == null || !query.Nodes.Any())
             {
                 return queryable;
             }

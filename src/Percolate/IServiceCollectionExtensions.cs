@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Percolate.ModelBinders;
 using System;
 
 namespace Percolate
@@ -22,9 +23,13 @@ namespace Percolate
 
         private static IServiceCollection BuildPercolateService<TPercolateModel>(this IServiceCollection services, Action<PercolateOptions> options) where TPercolateModel : PercolateModel
         {
-            services.AddMvcCore(options => options.Filters.Add<PercolateActionFilter<TPercolateModel>>());
-            services.AddScoped<TPercolateModel>();
-            services.AddScoped<IPercolateService<TPercolateModel>, PercolateService<TPercolateModel>>();
+            services.AddMvcCore(options =>
+            {
+                options.Filters.Add<PercolateActionFilter>();
+                options.ModelBinderProviders.Insert(0, new QueryModelBinderProvider());
+            });
+            services.AddScoped<PercolateModel, TPercolateModel>();
+            services.AddScoped<IPercolateService, PercolateService>();
             services.Configure(options);
 
             return services;

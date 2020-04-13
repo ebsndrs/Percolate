@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Percolate\Percolate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Percolate">
+      <HintPath>..\Percolate\bin\Debug\netstandard2.1\Percolate.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

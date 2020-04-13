@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Percolate.Exceptions;
+﻿using Percolate.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CsvHelper;
-using System.IO;
-using System.Text;
 using Percolate.Extensions;
+using Microsoft.Extensions.Primitives;
 
 namespace Percolate.Filtering
 {
@@ -50,7 +46,7 @@ namespace Percolate.Filtering
             { "or" , FilterQueryClauseOperator.Or},
         };
 
-        public static FilterQuery ParseFilterQuery(IQueryCollection queryCollection)
+        public static FilterQuery ParseFilterQuery(Dictionary<string, StringValues> queryCollection)
         {
             var query = new FilterQuery();
 

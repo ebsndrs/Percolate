@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Percolate
 {
-    public interface IPercolateService<TPercolateModel> where TPercolateModel : PercolateModel
+    public interface IPercolateService
     {
-        public PercolateOptions Options { get; set; }
+        PercolateOptions Options { get; set; }
 
-        public TPercolateModel Model { get; set; }
+        PercolateModel Model { get; set; }
 
-        public IActionResult Process(ActionExecutedContext context);
+        IActionResult ApplyQuery(ActionExecutedContext context);
     }
 }

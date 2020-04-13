@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Percolate.Sorting
 {
     public static class SortParser
     {
-        public static SortQuery ParseSortQuery(IQueryCollection queryCollection)
+        public static SortQuery ParseSortQuery(Dictionary<string, StringValues> queryCollection)
         {
             if (queryCollection.ContainsKey("sort"))
             {

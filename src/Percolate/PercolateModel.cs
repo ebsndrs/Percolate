@@ -1,6 +1,7 @@
 ﻿using Percolate.Builders;
 using Percolate.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Percolate
 {
@@ -37,6 +38,12 @@ namespace Percolate
         public PercolateModelBuilder ModelBuilder { get; set; }
 
         public List<IPercolateType> Types { get; set; }
+
+        public IPercolateType GetType<T>()
+        {
+            return Types
+                .FirstOrDefault(type => type.Type == typeof(T));
+        }
 
         public virtual void Configure(PercolateModelBuilder modelBuilder) { }
     }
