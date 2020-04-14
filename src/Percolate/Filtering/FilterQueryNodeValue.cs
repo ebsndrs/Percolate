@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Percolate.Filtering
+﻿namespace Percolate.Filtering
 {
     public class FilterQueryNodeValue
     {

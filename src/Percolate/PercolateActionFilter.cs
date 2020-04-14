@@ -13,7 +13,17 @@ namespace Percolate
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            context.Result = service.ApplyQuery(context);
+            try
+            {
+                context.Result = service.ProcessResult(context);
+            }
+            catch
+            {
+                if (!service.Options.DoExceptionsFailSilently)
+                {
+                    throw;
+                }
+            }
         }
 
         public void OnActionExecuting(ActionExecutingContext context) { }

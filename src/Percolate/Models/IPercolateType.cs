@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Percolate.Models
 {
-    public interface IPercolateType
+    public interface IPercolateEntity
     {
         public ICollection<PercolateProperty> Properties { get; set; }
 

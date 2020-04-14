@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Percolate", "Percolate.cspr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PercolateTests", "..\..\tests\PercolateTests\PercolateTests.csproj", "{B9173747-D0F3-442E-B0AC-FCCC0105BA8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PercolateSample", "..\..\samples\PercolateSample\PercolateSample.csproj", "{FEA9D6D0-6872-407E-A1C3-1D32260CDA93}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{B9173747-D0F3-442E-B0AC-FCCC0105BA8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9173747-D0F3-442E-B0AC-FCCC0105BA8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9173747-D0F3-442E-B0AC-FCCC0105BA8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FEA9D6D0-6872-407E-A1C3-1D32260CDA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEA9D6D0-6872-407E-A1C3-1D32260CDA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FEA9D6D0-6872-407E-A1C3-1D32260CDA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FEA9D6D0-6872-407E-A1C3-1D32260CDA93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

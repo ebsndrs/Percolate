@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Primitives;
-using Percolate.Attributes;
 using Percolate.Extensions;
 using Percolate.Models;
 using System;
@@ -13,7 +12,7 @@ namespace Percolate.Filtering
 {
     public static class FilterHelper
     {
-        public static bool IsFilteringEnabled(EnablePercolateAttribute attribute, IPercolateType type, PercolateOptions options)
+        public static bool IsFilteringEnabled(EnablePercolateAttribute attribute, IPercolateEntity type, PercolateOptions options)
         {
             if (attribute != default && attribute.FilterSetting != PercolateAttributeSetting.Unset)
             {
@@ -34,7 +33,7 @@ namespace Percolate.Filtering
             return FilterParser.ParseFilterQuery(queryCollection);
         }
 
-        public static void ValidateFilterQuery(FilterQuery query, IPercolateType type)
+        public static void ValidateFilterQuery(FilterQuery query, IPercolateEntity type)
         {
             FilterValidator.ValidateFilterQuery(query, type, FilterValidator.GetFilterQueryValidationRules(type));
         }

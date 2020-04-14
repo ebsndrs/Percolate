@@ -9,6 +9,6 @@ namespace Percolate
 
         PercolateModel Model { get; set; }
 
-        IActionResult ApplyQuery(ActionExecutedContext context);
+        IActionResult ProcessResult(ActionExecutedContext context);
     }
 }

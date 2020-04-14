@@ -9,7 +9,7 @@ namespace Percolate
     {
         public PercolateModel()
         {
-            Types = new List<IPercolateType>();
+            Entities = new List<IPercolateEntity>();
 
             if (ModelBuilder == null)
             {
@@ -18,12 +18,12 @@ namespace Percolate
 
             Configure(ModelBuilder);
 
-            Types = ModelBuilder.Model.Types;
+            Entities = ModelBuilder.Model.Entities;
         }
 
         public PercolateModel(PercolateModelBuilder modelBuilder)
         {
-            Types = new List<IPercolateType>();
+            Entities = new List<IPercolateEntity>();
 
             if (modelBuilder == null && ModelBuilder == null)
             {
@@ -37,12 +37,12 @@ namespace Percolate
 
         public PercolateModelBuilder ModelBuilder { get; set; }
 
-        public List<IPercolateType> Types { get; set; }
+        public List<IPercolateEntity> Entities { get; set; }
 
-        public IPercolateType GetType<T>()
+        public IPercolateEntity GetEntity<T>()
         {
-            return Types
-                .FirstOrDefault(type => type.Type == typeof(T));
+            return Entities
+                .FirstOrDefault(entity => entity.Type == typeof(T));
         }
 
         public virtual void Configure(PercolateModelBuilder modelBuilder) { }

@@ -1,12 +1,11 @@
-﻿using Percolate.Attributes;
-using Percolate.Exceptions;
+﻿using Percolate.Exceptions;
 using Percolate.Models;
 
 namespace Percolate.Paging
 {
     public static class PageValidator
     {
-        public static PageValidationRules GetPageQueryValidationRules(EnablePercolateAttribute attribute, IPercolateType model, PercolateOptions options)
+        public static PageValidationRules GetPageQueryValidationRules(EnablePercolateAttribute attribute, IPercolateEntity model, PercolateOptions options)
         {
             return new PageValidationRules
             {

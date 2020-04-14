@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Percolate.Filtering;
-using Percolate.ModelBinders;
+﻿using Percolate.Filtering;
 using Percolate.Paging;
 using Percolate.Sorting;
 

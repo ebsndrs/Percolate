@@ -6,10 +6,9 @@
         {
             IsPercolateEnabledGlobally = false;
             DoExceptionsFailSilently = true;
-            DoResponsesIncludeMetadata = true;
-            IsPagingEnabled = true;
-            IsSortingEnabled = true;
             IsFilteringEnabled = true;
+            IsSortingEnabled = true;
+            IsPagingEnabled = true;
             DefaultPageSize = 100;
             MaximumPageSize = 1000;
         }
@@ -18,13 +17,11 @@
 
         public bool DoExceptionsFailSilently { get; set; }
 
-        public bool DoResponsesIncludeMetadata { get; set; }
-
-        public bool IsPagingEnabled { get; set; }
+        public bool IsFilteringEnabled { get; set; }
 
         public bool IsSortingEnabled { get; set; }
 
-        public bool IsFilteringEnabled { get; set; }
+        public bool IsPagingEnabled { get; set; }
 
         public int DefaultPageSize { get; set; }
 

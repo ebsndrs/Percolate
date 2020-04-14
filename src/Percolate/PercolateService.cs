@@ -28,7 +28,7 @@ namespace Percolate
 
         public PercolateOptions Options { get; set; }
 
-        public IActionResult ApplyQuery(ActionExecutedContext context)
+        public IActionResult ProcessResult(ActionExecutedContext context)
         {
             if (!(context.Result is OkObjectResult result))
             {
@@ -61,10 +61,10 @@ namespace Percolate
 
             try
             {
-                 return new OkObjectResult(GetType()
-                    .GetMethod(nameof(ApplyQuery), BindingFlags.NonPublic | BindingFlags.Instance)
-                    .MakeGenericMethod(genericType)
-                    .Invoke(this, new[] { context, queryable }));
+                return new OkObjectResult(GetType()
+                   .GetMethod(nameof(ProcessResult), BindingFlags.NonPublic | BindingFlags.Instance)
+                   .MakeGenericMethod(genericType)
+                   .Invoke(this, new[] { context, queryable }));
             }
             catch (TargetInvocationException exception)
             {
@@ -75,13 +75,16 @@ namespace Percolate
         private IQueryable<T> ApplyQuery<T>(ActionExecutedContext context, IQueryable<T> queryable)
         {
             var attribute = GetEnablePercolateAttribute(context.ActionDescriptor);
-            var type = Model.GetType<T>();
-            var queryCollection = context.HttpContext.Request.Query.ToDictionary(q => q.Key, q => q.Value);
+            var type = Model.GetEntity<T>();
+
+            //casting IQueryCollection to a normal dictionary keeps us from having to use ASPNET Core namespaces in other classes
+            var queryCollection = context.HttpContext.Request.Query
+                .ToDictionary(q => q.Key, q => q.Value);
 
             if (FilterHelper.IsFilteringEnabled(attribute, type, Options))
             {
                 var filterQuery = FilterHelper.ParseFilterQuery(queryCollection);
-                //FilterHelper.ValidateFilterQuery(filterQuery, type);
+                FilterHelper.ValidateFilterQuery(filterQuery, type);
                 queryable = FilterHelper.ApplyFilterQuery(queryable, filterQuery);
             }
 
@@ -138,9 +141,9 @@ namespace Percolate
             return result.Value is IEnumerable || result.Value is IQueryable;
         }
 
-        private IPercolateType GetPercolateType<T>()
+        private IPercolateEntity GetPercolateType<T>()
         {
-            return Model.Types
+            return Model.Entities
                 .FirstOrDefault(type => type.Type == typeof(T));
         }
 

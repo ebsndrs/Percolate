@@ -11,24 +11,24 @@ namespace Percolate.Builders
 
         public PercolateModel Model { get; set; }
 
-        public PercolateTypeBuilder<TType> Type<TType>() where TType : class
+        public PercolateEntityBuilder<TEntity> Entity<TEntity>() where TEntity : class
         {
-            PercolateTypeBuilder<TType> typeBuilder;
+            PercolateEntityBuilder<TEntity> entityBuilder;
 
-            var existingTypeModel = Model.Types
-                .FirstOrDefault(t => t.Type is TType);
+            var existingEntity = Model.Entities
+                .FirstOrDefault(t => t.Type is TEntity);
 
-            if (existingTypeModel == null)
+            if (existingEntity == default)
             {
-                typeBuilder = new PercolateTypeBuilder<TType>();
-                Model.Types.Add(typeBuilder.Model);
+                entityBuilder = new PercolateEntityBuilder<TEntity>();
+                Model.Entities.Add(entityBuilder.Model);
             }
             else
             {
-                typeBuilder = new PercolateTypeBuilder<TType>(existingTypeModel);
+                entityBuilder = new PercolateEntityBuilder<TEntity>(existingEntity);
             }
 
-            return typeBuilder;
+            return entityBuilder;
         }
     }
 }

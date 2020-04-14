@@ -10,6 +10,8 @@ namespace PercolateSample.Models
 
         public int Age { get; set; }
 
+        public Address Address { get; set; }
+
         public DateTime CreatedDateTime { get; set; }
     }
 }

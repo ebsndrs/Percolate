@@ -10,24 +10,24 @@ namespace Percolate.Extensions
     {
         public static IQueryable<T> ApplyQuery<T>(this IQueryable<T> queryable, QueryModel query, IPercolateService service)
         {
-            var type = service.Model.GetType<T>();
+            var entityType = service.Model.GetEntity<T>();
 
-            if (FilterHelper.IsFilteringEnabled(null, type, service.Options))
+            if (FilterHelper.IsFilteringEnabled(null, entityType, service.Options))
             {
-                //validate
+                FilterHelper.ValidateFilterQuery(query.FilterQueryModel, entityType);
                 queryable = FilterHelper.ApplyFilterQuery(queryable, query.FilterQueryModel);
             }
 
-            if (SortHelper.IsSortingEnabled(null, type, service.Options))
+            if (SortHelper.IsSortingEnabled(null, entityType, service.Options))
             {
-                SortHelper.ValidateSortQuery(query.SortQueryModel, type);
+                SortHelper.ValidateSortQuery(query.SortQueryModel, entityType);
                 queryable = SortHelper.ApplySortQuery(queryable, query.SortQueryModel);
             }
 
-            if (PageHelper.IsPagingEnabled(null, type, service.Options))
+            if (PageHelper.IsPagingEnabled(null, entityType, service.Options))
             {
-                PageHelper.ValidatePageQuery(query.PageQueryModel, null, type, service.Options);
-                queryable = PageHelper.ApplyPageQuery(queryable, query.PageQueryModel, null, type, service.Options);
+                PageHelper.ValidatePageQuery(query.PageQueryModel, null, entityType, service.Options);
+                queryable = PageHelper.ApplyPageQuery(queryable, query.PageQueryModel, null, entityType, service.Options);
             }
 
             return queryable;

@@ -6,39 +6,39 @@ using System.Reflection;
 
 namespace Percolate.Builders
 {
-    public class PercolateTypeBuilder<TType> where TType : class
+    public class PercolateEntityBuilder<TEntity> where TEntity : class
     {
-        public PercolateTypeBuilder()
+        public PercolateEntityBuilder()
         {
-            Model = new PercolateType<TType>();
+            Model = new PercolateType<TEntity>();
         }
 
-        public PercolateTypeBuilder(IPercolateType model)
+        public PercolateEntityBuilder(IPercolateEntity model)
         {
             Model = model;
         }
 
-        public IPercolateType Model { get; set; }
+        public IPercolateEntity Model { get; set; }
 
-        public PercolateTypeBuilder<TType> CanPage(bool canPage = true)
+        public PercolateEntityBuilder<TEntity> CanPage(bool canPage = true)
         {
             Model.IsPagingEnabled = canPage;
             return this;
         }
 
-        public PercolateTypeBuilder<TType> CanSort(bool canSort = true)
+        public PercolateEntityBuilder<TEntity> CanSort(bool canSort = true)
         {
             Model.IsSortingEnabled = canSort;
             return this;
         }
 
-        public PercolateTypeBuilder<TType> CanFilter(bool canFilter = true)
+        public PercolateEntityBuilder<TEntity> CanFilter(bool canFilter = true)
         {
             Model.IsFilteringEnabled = canFilter;
             return this;
         }
 
-        public PercolateTypeBuilder<TType> HasDefaultPageSize(int defaultPageSize)
+        public PercolateEntityBuilder<TEntity> HasDefaultPageSize(int defaultPageSize)
         {
             if (defaultPageSize < 1)
             {
@@ -49,18 +49,18 @@ namespace Percolate.Builders
             return this;
         }
 
-        public PercolateTypeBuilder<TType> HasMaxPageSize(int maxPageSize)
+        public PercolateEntityBuilder<TEntity> HasMaxPageSize(int maximumPageSize)
         {
-            if (maxPageSize < 1)
+            if (maximumPageSize < 1)
             {
-                throw new ArgumentException("MaxPageSize cannot be less than 1.");
+                throw new ArgumentException($"{nameof(maximumPageSize)} cannot be less than 1.");
             }
 
-            Model.MaximumPageSize = maxPageSize;
+            Model.MaximumPageSize = maximumPageSize;
             return this;
         }
 
-        public PercolatePropertyBuilder<TProperty> Property<TProperty>(Expression<Func<TType, TProperty>> propertyExpression)
+        public PercolatePropertyBuilder<TProperty> Property<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression)
         {
             PercolatePropertyBuilder<TProperty> propertyBuilder;
 
@@ -74,7 +74,8 @@ namespace Percolate.Builders
                 throw new NotSupportedException();
             }
 
-            var existingPropertyModel = Model.Properties.FirstOrDefault(p => p.Name == propertyInfo.Name);
+            var existingPropertyModel = Model.Properties
+                .FirstOrDefault(p => p.Name == propertyInfo.Name);
 
             /*
              * TODO:
@@ -93,19 +94,19 @@ namespace Percolate.Builders
              * That will add any property that wouldn't cause a recursive stack overflow.
              */
 
-            if (!typeof(TType).GetProperties().Any(p => p.Name == propertyInfo.Name))
+            if (!typeof(TEntity).GetProperties().Any(p => p.Name == propertyInfo.Name))
             {
                 throw new NotSupportedException();
             }
 
-            if (existingPropertyModel != null)
-            {
-                propertyBuilder = new PercolatePropertyBuilder<TProperty>(existingPropertyModel);
-            }
-            else
+            if (existingPropertyModel == default)
             {
                 propertyBuilder = new PercolatePropertyBuilder<TProperty>(propertyInfo);
                 Model.Properties.Add(propertyBuilder.Model);
+            }
+            else
+            {
+                propertyBuilder = new PercolatePropertyBuilder<TProperty>(existingPropertyModel);
             }
 
             return propertyBuilder;

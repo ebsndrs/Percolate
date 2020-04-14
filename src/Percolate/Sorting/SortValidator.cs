@@ -1,5 +1,4 @@
 ﻿using Percolate.Exceptions;
-using Percolate.Extensions;
 using Percolate.Models;
 using System;
 using System.Linq;
@@ -8,7 +7,7 @@ namespace Percolate.Sorting
 {
     public static class SortValidator
     {
-        public static SortValidationRules GetSortQueryValidationRules(IPercolateType type)
+        public static SortValidationRules GetSortQueryValidationRules(IPercolateEntity type)
         {
             return new SortValidationRules
             {
@@ -17,7 +16,7 @@ namespace Percolate.Sorting
             };
         }
 
-        public static void ValidateSortQuery(SortQuery query, IPercolateType type, SortValidationRules rules)
+        public static void ValidateSortQuery(SortQuery query, IPercolateEntity type, SortValidationRules rules)
         {
             if (query == null)
             {

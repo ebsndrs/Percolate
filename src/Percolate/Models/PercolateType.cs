@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Percolate.Models
 {
-    public class PercolateType<TType> : IPercolateType where TType : class
+    public class PercolateType<TType> : IPercolateEntity where TType : class
     {
         public PercolateType()
         {

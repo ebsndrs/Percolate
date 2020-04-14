@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 using Percolate.Exceptions;
 using Percolate.Sorting;
 using System.Collections.Generic;

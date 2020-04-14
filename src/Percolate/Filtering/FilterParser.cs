@@ -1,10 +1,10 @@
-﻿using Percolate.Exceptions;
+﻿using Microsoft.Extensions.Primitives;
+using Percolate.Exceptions;
+using Percolate.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Percolate.Extensions;
-using Microsoft.Extensions.Primitives;
 
 namespace Percolate.Filtering
 {
@@ -105,7 +105,7 @@ namespace Percolate.Filtering
             if (foundOperators.Count() != 1)
             {
                 var exceptionMessage = foundOperators.Any() ?
-                    $"More than one valid operator was found in the filter query parameter \"{node}\"."  :
+                    $"More than one valid operator was found in the filter query parameter \"{node}\"." :
                     $"No valid operator was found in the filter query parameter \"{node}\".";
 
                 throw new ParameterParsingException(exceptionMessage);

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Primitives;
-using Percolate.Attributes;
 using Percolate.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ namespace Percolate.Sorting
 {
     public static class SortHelper
     {
-        public static bool IsSortingEnabled(EnablePercolateAttribute attribute, IPercolateType type, PercolateOptions options)
+        public static bool IsSortingEnabled(EnablePercolateAttribute attribute, IPercolateEntity type, PercolateOptions options)
         {
             if (attribute != default && attribute.SortSetting != PercolateAttributeSetting.Unset)
             {
@@ -30,7 +29,7 @@ namespace Percolate.Sorting
             return SortParser.ParseSortQuery(queryCollection);
         }
 
-        public static void ValidateSortQuery(SortQuery query, IPercolateType type)
+        public static void ValidateSortQuery(SortQuery query, IPercolateEntity type)
         {
             SortValidator.ValidateSortQuery(query, type, SortValidator.GetSortQueryValidationRules(type));
         }

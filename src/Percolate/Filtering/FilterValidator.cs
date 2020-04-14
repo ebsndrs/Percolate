@@ -8,7 +8,7 @@ namespace Percolate.Filtering
 {
     public static class FilterValidator
     {
-        public static FilterValidationRules GetFilterQueryValidationRules(IPercolateType type)
+        public static FilterValidationRules GetFilterQueryValidationRules(IPercolateEntity type)
         {
             var disallowedProperties = type.Properties
                 .Where(property => property.IsFilteringAllowed.HasValue && property.IsFilteringAllowed == false);
@@ -19,21 +19,21 @@ namespace Percolate.Filtering
             };
         }
 
-        public static void ValidateFilterQuery(FilterQuery query, IPercolateType type, FilterValidationRules rules)
+        public static void ValidateFilterQuery(FilterQuery query, IPercolateEntity type, FilterValidationRules rules)
         {
             foreach (var node in query.Nodes)
             {
                 //ensure that all properties that were parsed in the node exist in the type configuration
-                var typePropertyNames = type.Properties
-                    .Select(property => property.Name);
+                //var typePropertyNames = type.Properties
+                //    .Select(property => property.Name);
 
-                var propertiesThatAreNotOnType = node.Properties
-                    .Where(np => !typePropertyNames.Contains(np.Name, StringComparer.InvariantCultureIgnoreCase));
+                //var propertiesThatAreNotOnType = node.Properties
+                //    .Where(np => !typePropertyNames.Contains(np.Name, StringComparer.InvariantCultureIgnoreCase));
 
-                if (propertiesThatAreNotOnType.Any())
-                {
-                    throw new ParameterValidationException();
-                }
+                //if (propertiesThatAreNotOnType.Any())
+                //{
+                //    throw new ParameterValidationException();
+                //}
 
                 //ensure that all properties that exist on the type but are allowed to filter on by property level configuration
                 var disallowedPropertyNames = rules.DisallowedProperties
@@ -53,13 +53,13 @@ namespace Percolate.Filtering
                     .Select(p => p.Type)
                     .Distinct();
 
-                if (propertyTypes.Count() > 1)
+                if (propertyTypes.Count() != 1)
                 {
                     throw new ParameterValidationException();
                 }
 
-                //ensure that all piped values can be parsed into the shared type
-                var validType = propertyTypes.First();
+                //ensure that all values can be parsed into the shared type
+                var validType = propertyTypes.Single();
                 var typeConverter = TypeDescriptor.GetConverter(validType);
 
                 foreach (var value in node.Values)
