@@ -1,6 +1,6 @@
 # Percolate ☕
 
-Percolate is a lightweight library for paging, filtering, and sorting your API responses.
+Percolate is a WIP lightweight library for paging, filtering, and sorting your API responses.
 
 ## Table of Contents
 
