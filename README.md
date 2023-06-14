@@ -1,3 +1,6 @@
+> Percolate was a small project I worked on to implement filtering, paging, and sorting for .NET Web API endpoints that return collections. It was originally inspired by OData.
+> It's half-finished, half-tested, and abandoned, but I'm leaving it on GitHub because it's a great artifact from when I was learning to code. Enjoy!
+
 # Percolate ☕
 
 Percolate is a WIP lightweight library for paging, filtering, and sorting your API responses.
